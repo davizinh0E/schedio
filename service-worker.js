@@ -1,7 +1,10 @@
 const CACHE_NAME = 'schedio-v1';
+const BASE_PATH = '/schedio/';
 const urlsToCache = [
-    '/schedio.html',
-    '/manifest.json',
+    `${BASE_PATH}schedio.html`,
+    `${BASE_PATH}manifest.json`,
+    `${BASE_PATH}icon-192.png`,
+    `${BASE_PATH}icon-512.png`,
     'https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap',
     'https://unpkg.com/react@18/umd/react.production.min.js',
     'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
@@ -119,7 +122,7 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     event.waitUntil(
-        clients.openWindow('/schedio.html')
+        clients.openWindow(`${BASE_PATH}schedio.html`)
     );
 });
 

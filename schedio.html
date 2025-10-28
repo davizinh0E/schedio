@@ -1233,7 +1233,14 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
+                // Use relative path for GitHub Pages
+                const swPath = window.location.pathname.includes('/schedio/')
+                    ? '/schedio/service-worker.js'
+                    : '/service-worker.js';
+
+                navigator.serviceWorker.register(swPath, {
+                    scope: window.location.pathname.includes('/schedio/') ? '/schedio/' : '/'
+                })
                     .then((registration) => {
                         console.log('Service Worker registered successfully:', registration.scope);
 
