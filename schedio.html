@@ -188,12 +188,12 @@
                 return saved || 'off'; // 'off', '30', '60', '120'
             });
             const [events, setEvents] = useState({
-                '2024-12-13': [{ title: 'Team Meeting', time: '3:00 PM', color: 'bg-gradient-to-br from-amber-200 to-amber-300' }],
-                '2024-12-14': [
+                '2025-12-13': [{ title: 'Team Meeting', time: '3:00 PM', color: 'bg-gradient-to-br from-amber-200 to-amber-300' }],
+                '2025-12-14': [
                     { title: 'Proj Update', time: '9:00 AM', color: 'bg-gradient-to-br from-rose-200 to-rose-300' },
                     { title: 'Meeting', time: '10:00 AM', color: 'bg-gradient-to-br from-rose-200 to-rose-300' }
                 ],
-                '2024-12-15': [{ title: 'Web Update', time: '2:00 PM', color: 'bg-gradient-to-br from-teal-200 to-teal-300' }]
+                '2025-12-15': [{ title: 'Web Update', time: '2:00 PM', color: 'bg-gradient-to-br from-teal-200 to-teal-300' }]
             });
 
             // Save dark mode preference
@@ -282,6 +282,20 @@
                 october: language === 'pt' ? 'Outubro' : 'October',
                 november: language === 'pt' ? 'Novembro' : 'November',
                 december: language === 'pt' ? 'Dezembro' : 'December',
+
+                // Short months
+                jan: language === 'pt' ? 'JAN' : 'JAN',
+                feb: language === 'pt' ? 'FEV' : 'FEB',
+                mar: language === 'pt' ? 'MAR' : 'MAR',
+                apr: language === 'pt' ? 'ABR' : 'APR',
+                mai: language === 'pt' ? 'MAI' : 'MAY',
+                jun: language === 'pt' ? 'JUN' : 'JUN',
+                jul: language === 'pt' ? 'JUL' : 'JUL',
+                aug: language === 'pt' ? 'AGO' : 'AUG',
+                sep: language === 'pt' ? 'SET' : 'SEP',
+                oct: language === 'pt' ? 'OUT' : 'OCT',
+                nov: language === 'pt' ? 'NOV' : 'NOV',
+                dec: language === 'pt' ? 'DEZ' : 'DEC',
 
                 // Add Event
                 newEvent: language === 'pt' ? 'Novo Evento' : 'New Event',
@@ -565,18 +579,18 @@
 
             const CalendarScreen = () => {
                 const months = [
-                    { name: 'January', shortName: 'JAN', number: 0, color: 'from-green-400 to-green-500', daysInMonth: 31, startDay: 1 },
-                    { name: 'February', shortName: 'FEB', number: 1, color: 'from-purple-400 to-purple-500', daysInMonth: 29, startDay: 4 },
-                    { name: 'March', shortName: 'MAR', number: 2, color: 'from-red-400 to-red-500', daysInMonth: 31, startDay: 5 },
-                    { name: 'April', shortName: 'APR', number: 3, color: 'from-orange-400 to-orange-500', daysInMonth: 30, startDay: 1 },
-                    { name: 'May', shortName: 'MAY', number: 4, color: 'from-teal-500 to-teal-600', daysInMonth: 31, startDay: 3 },
-                    { name: 'June', shortName: 'JUN', number: 5, color: 'from-cyan-400 to-cyan-500', daysInMonth: 30, startDay: 6 },
-                    { name: 'July', shortName: 'JUL', number: 6, color: 'from-blue-600 to-blue-700', daysInMonth: 31, startDay: 1 },
-                    { name: 'August', shortName: 'AUG', number: 7, color: 'from-yellow-400 to-yellow-500', daysInMonth: 31, startDay: 4 },
-                    { name: 'September', shortName: 'SEP', number: 8, color: 'from-pink-400 to-pink-500', daysInMonth: 30, startDay: 0 },
-                    { name: 'October', shortName: 'OCT', number: 9, color: 'from-indigo-400 to-indigo-500', daysInMonth: 31, startDay: 2 },
-                    { name: 'November', shortName: 'NOV', number: 10, color: 'from-amber-500 to-amber-600', daysInMonth: 30, startDay: 5 },
-                    { name: 'December', shortName: 'DEC', number: 11, color: 'from-emerald-400 to-emerald-500', daysInMonth: 31, startDay: 0 }
+                    { name: t.january, shortName: language === 'pt' ? 'JAN' : 'JAN', number: 0, color: 'from-green-400 to-green-500', daysInMonth: 31, startDay: 1 },
+                    { name: t.february, shortName: language === 'pt' ? 'FEV' : 'FEB', number: 1, color: 'from-purple-400 to-purple-500', daysInMonth: 29, startDay: 4 },
+                    { name: t.march, shortName: language === 'pt' ? 'MAR' : 'MAR', number: 2, color: 'from-red-400 to-red-500', daysInMonth: 31, startDay: 5 },
+                    { name: t.april, shortName: language === 'pt' ? 'ABR' : 'APR', number: 3, color: 'from-orange-400 to-orange-500', daysInMonth: 30, startDay: 1 },
+                    { name: t.may, shortName: language === 'pt' ? 'MAI' : 'MAY', number: 4, color: 'from-teal-500 to-teal-600', daysInMonth: 31, startDay: 3 },
+                    { name: t.june, shortName: language === 'pt' ? 'JUN' : 'JUN', number: 5, color: 'from-cyan-400 to-cyan-500', daysInMonth: 30, startDay: 6 },
+                    { name: t.july, shortName: language === 'pt' ? 'JUL' : 'JUL', number: 6, color: 'from-blue-600 to-blue-700', daysInMonth: 31, startDay: 1 },
+                    { name: t.august, shortName: language === 'pt' ? 'AGO' : 'AUG', number: 7, color: 'from-yellow-400 to-yellow-500', daysInMonth: 31, startDay: 4 },
+                    { name: t.september, shortName: language === 'pt' ? 'SET' : 'SEP', number: 8, color: 'from-pink-400 to-pink-500', daysInMonth: 30, startDay: 0 },
+                    { name: t.october, shortName: language === 'pt' ? 'OUT' : 'OCT', number: 9, color: 'from-indigo-400 to-indigo-500', daysInMonth: 31, startDay: 2 },
+                    { name: t.november, shortName: language === 'pt' ? 'NOV' : 'NOV', number: 10, color: 'from-amber-500 to-amber-600', daysInMonth: 30, startDay: 5 },
+                    { name: t.december, shortName: language === 'pt' ? 'DEZ' : 'DEC', number: 11, color: 'from-emerald-400 to-emerald-500', daysInMonth: 31, startDay: 0 }
                 ];
 
                 const generateCalendar = (monthData) => {
@@ -593,7 +607,7 @@
                 const currentMonthIndex = new Date().getMonth();
 
                 const handleDayClick = (monthNumber, day) => {
-                    const dateStr = `2024-${String(monthNumber + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const dateStr = `2025-${String(monthNumber + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                     setSelectedDate(dateStr);
                     setCurrentScreen('add');
                 };
@@ -614,7 +628,7 @@
                                         <ChevronLeft size={20} />
                                     </button>
                                     <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                        {monthData.name} 2024
+                                        {monthData.name} 2025
                                     </div>
                                     <button
                                         onClick={() => {
@@ -639,7 +653,7 @@
                                     </div>
                                     <div className="grid grid-cols-7 gap-3">
                                         {calendarDays.map((date, i) => {
-                                            const dateStr = date ? `2024-${String(monthData.number + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}` : null;
+                                            const dateStr = date ? `2025-${String(monthData.number + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}` : null;
                                             const hasEvents = dateStr && events[dateStr];
                                             const today = new Date();
                                             const isToday = date === today.getDate() && monthData.number === today.getMonth();
@@ -675,7 +689,7 @@
                                     <h3 className={`text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.eventsThisMonth}</h3>
                                     <div className="space-y-3">
                                         {Object.keys(events)
-                                            .filter(dateStr => dateStr.startsWith(`2024-${String(monthData.number + 1).padStart(2, '0')}`))
+                                            .filter(dateStr => dateStr.startsWith(`2025-${String(monthData.number + 1).padStart(2, '0')}`))
                                             .sort()
                                             .map(dateStr => {
                                                 const day = parseInt(dateStr.split('-')[2]);
@@ -694,7 +708,7 @@
                                                 ));
                                             })}
                                         {Object.keys(events).filter(dateStr =>
-                                            dateStr.startsWith(`2024-${String(monthData.number + 1).padStart(2, '0')}`)
+                                            dateStr.startsWith(`2025-${String(monthData.number + 1).padStart(2, '0')}`)
                                         ).length === 0 && (
                                                 <div className={`text-center py-8 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                                                     {t.noEventsThisMonth}
@@ -713,7 +727,7 @@
                         <div className="p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                    2024
+                                    2025
                                 </div>
                                 <button
                                     onClick={() => setCurrentScreen('add')}
@@ -729,7 +743,7 @@
                                 {months.map((month) => {
                                     const isCurrent = month.number === currentMonthIndex;
                                     const monthEvents = Object.keys(events).filter(dateStr =>
-                                        dateStr.startsWith(`2024-${String(month.number + 1).padStart(2, '0')}`)
+                                        dateStr.startsWith(`2025-${String(month.number + 1).padStart(2, '0')}`)
                                     ).length;
 
                                     return (
@@ -755,7 +769,7 @@
                                                 </div>
                                                 <div className="grid grid-cols-7 gap-1">
                                                     {generateCalendar(month).map((date, i) => {
-                                                        const dateStr = date ? `2024-${String(month.number + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}` : null;
+                                                        const dateStr = date ? `2025-${String(month.number + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}` : null;
                                                         const hasEvents = dateStr && events[dateStr];
                                                         const today = new Date();
                                                         const isToday = date === today.getDate() && month.number === today.getMonth();
@@ -1376,29 +1390,29 @@
                                 setViewMode('today');
                                 setCurrentScreen('home');
                             }}
-                            className={`flex flex-col items-center gap-1.5 transition ${currentScreen === 'home' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                            className={`flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'home' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
                                 }`}
                         >
-                            <Home size={24} />
-                            <span className="text-xs font-semibold">{t.home}</span>
+                            <Home size={22} />
+                            <span className="text-[10px] font-semibold">{t.home}</span>
                         </button>
                         <button
                             onClick={() => {
                                 setSelectedMonth(null);
                                 setCurrentScreen('calendar');
                             }}
-                            className={`flex flex-col items-center gap-1.5 transition ${currentScreen === 'calendar' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                            className={`flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'calendar' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
                                 }`}
                         >
-                            <Calendar size={24} />
-                            <span className="text-xs font-semibold">{t.calendar}</span>
+                            <Calendar size={22} />
+                            <span className="text-[10px] font-semibold">{t.calendar}</span>
                         </button>
                         <button
                             onClick={() => {
                                 setSelectedDate(null);
                                 setCurrentScreen('add');
                             }}
-                            className="flex flex-col items-center gap-1.5 text-white"
+                            className="flex flex-col items-center gap-1 text-white min-w-[52px]"
                         >
                             <div className={`p-3.5 rounded-2xl -mt-6 shadow-lg ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900'}`}>
                                 <Plus size={24} />
@@ -1406,19 +1420,19 @@
                         </button>
                         <button
                             onClick={() => setCurrentScreen('stats')}
-                            className={`flex flex-col items-center gap-1.5 transition ${currentScreen === 'stats' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                            className={`flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'stats' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
                                 }`}
                         >
-                            <BarChart3 size={24} />
-                            <span className="text-xs font-semibold">{t.stats}</span>
+                            <BarChart3 size={22} />
+                            <span className="text-[10px] font-semibold">{t.stats}</span>
                         </button>
                         <button
                             onClick={() => setCurrentScreen('config')}
-                            className={`flex flex-col items-center gap-1.5 transition ${currentScreen === 'config' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                            className={`flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'config' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
                                 }`}
                         >
-                            <Settings size={24} />
-                            <span className="text-xs font-semibold">{t.settings}</span>
+                            <Settings size={22} />
+                            <span className="text-[10px] font-semibold leading-tight">{t.settings}</span>
                         </button>
                     </div>
                 </div>
