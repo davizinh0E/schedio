@@ -178,6 +178,14 @@
                 const saved = localStorage.getItem('darkMode');
                 return saved ? JSON.parse(saved) : false;
             });
+            const [language, setLanguage] = useState(() => {
+                const saved = localStorage.getItem('language');
+                return saved || 'en'; // 'en' or 'pt'
+            });
+            const [autoDeletion, setAutoDeletion] = useState(() => {
+                const saved = localStorage.getItem('autoDeletion');
+                return saved || 'off'; // 'off', '30', '60', '120'
+            });
             const [events, setEvents] = useState({
                 '2024-12-13': [{ title: 'Team Meeting', time: '3:00 PM', color: 'bg-gradient-to-br from-amber-200 to-amber-300' }],
                 '2024-12-14': [
@@ -192,8 +200,146 @@
                 localStorage.setItem('darkMode', JSON.stringify(darkMode));
             }, [darkMode]);
 
+            // Save language preference
+            React.useEffect(() => {
+                localStorage.setItem('language', language);
+            }, [language]);
+
+            // Save auto deletion preference
+            React.useEffect(() => {
+                localStorage.setItem('autoDeletion', autoDeletion);
+            }, [autoDeletion]);
+
             const toggleDarkMode = () => {
                 setDarkMode(!darkMode);
+            };
+
+            const toggleLanguage = () => {
+                setLanguage(language === 'en' ? 'pt' : 'en');
+            };
+
+            const getAutoDeletionText = () => {
+                if (language === 'pt') {
+                    switch (autoDeletion) {
+                        case '30': return '30 dias';
+                        case '60': return '60 dias';
+                        case '120': return '120 dias';
+                        default: return 'Desativado';
+                    }
+                }
+                switch (autoDeletion) {
+                    case '30': return '30 days';
+                    case '60': return '60 days';
+                    case '120': return '120 days';
+                    default: return 'Off';
+                }
+            };
+
+            // Translations
+            const t = {
+                // Navigation
+                home: language === 'pt' ? 'Início' : 'Home',
+                calendar: language === 'pt' ? 'Calendário' : 'Calendar',
+                stats: language === 'pt' ? 'Estatísticas' : 'Stats',
+                settings: language === 'pt' ? 'Configurações' : 'Settings',
+
+                // Home Screen
+                today: language === 'pt' ? 'Hoje' : 'Today',
+                todaysTasks: language === 'pt' ? 'Tarefas de hoje' : 'Todays tasks',
+                reminders: language === 'pt' ? 'Lembretes' : 'Reminders',
+                start: language === 'pt' ? 'Início' : 'Start',
+                end: language === 'pt' ? 'Fim' : 'End',
+
+                // Days of week
+                sunday: language === 'pt' ? 'Domingo' : 'Sunday',
+                monday: language === 'pt' ? 'Segunda' : 'Monday',
+                tuesday: language === 'pt' ? 'Terça' : 'Tuesday',
+                wednesday: language === 'pt' ? 'Quarta' : 'Wednesday',
+                thursday: language === 'pt' ? 'Quinta' : 'Thursday',
+                friday: language === 'pt' ? 'Sexta' : 'Friday',
+                saturday: language === 'pt' ? 'Sábado' : 'Saturday',
+
+                // Short days
+                sun: language === 'pt' ? 'Dom' : 'Sun',
+                mon: language === 'pt' ? 'Seg' : 'Mon',
+                tue: language === 'pt' ? 'Ter' : 'Tue',
+                wed: language === 'pt' ? 'Qua' : 'Wed',
+                thu: language === 'pt' ? 'Qui' : 'Thu',
+                fri: language === 'pt' ? 'Sex' : 'Fri',
+                sat: language === 'pt' ? 'Sáb' : 'Sat',
+
+                // Months
+                january: language === 'pt' ? 'Janeiro' : 'January',
+                february: language === 'pt' ? 'Fevereiro' : 'February',
+                march: language === 'pt' ? 'Março' : 'March',
+                april: language === 'pt' ? 'Abril' : 'April',
+                may: language === 'pt' ? 'Maio' : 'May',
+                june: language === 'pt' ? 'Junho' : 'June',
+                july: language === 'pt' ? 'Julho' : 'July',
+                august: language === 'pt' ? 'Agosto' : 'August',
+                september: language === 'pt' ? 'Setembro' : 'September',
+                october: language === 'pt' ? 'Outubro' : 'October',
+                november: language === 'pt' ? 'Novembro' : 'November',
+                december: language === 'pt' ? 'Dezembro' : 'December',
+
+                // Add Event
+                newEvent: language === 'pt' ? 'Novo Evento' : 'New Event',
+                eventTitle: language === 'pt' ? 'Título do Evento' : 'Event Title',
+                date: language === 'pt' ? 'Data' : 'Date',
+                time: language === 'pt' ? 'Hora' : 'Time',
+                category: language === 'pt' ? 'Categoria' : 'Category',
+                colorTheme: language === 'pt' ? 'Tema de Cor' : 'Color Theme',
+                description: language === 'pt' ? 'Descrição' : 'Description',
+                reminder: language === 'pt' ? 'Lembrete' : 'Reminder',
+                createEvent: language === 'pt' ? 'Criar Evento' : 'Create Event',
+                addDetails: language === 'pt' ? 'Adicione detalhes sobre este evento...' : 'Add details about this event...',
+
+                // Calendar
+                eventsThisMonth: language === 'pt' ? 'Eventos este mês' : 'Events this month',
+                noEventsThisMonth: language === 'pt' ? 'Sem eventos este mês' : 'No events this month',
+                event: language === 'pt' ? 'evento' : 'event',
+                events: language === 'pt' ? 'eventos' : 'events',
+
+                // Stats
+                statistics: language === 'pt' ? 'Estatísticas' : 'Statistics',
+                yourWeeklyProgress: language === 'pt' ? 'Seu progresso semanal' : 'Your weekly progress',
+                currentStreak: language === 'pt' ? 'Sequência Atual' : 'Current Streak',
+                completion: language === 'pt' ? 'Conclusão' : 'Completion',
+                days: language === 'pt' ? 'dias' : 'days',
+                thisWeek: language === 'pt' ? 'esta semana' : 'this week',
+                weeklyActivity: language === 'pt' ? 'Atividade Semanal' : 'Weekly Activity',
+                tasksByCategory: language === 'pt' ? 'Tarefas por Categoria' : 'Tasks by Category',
+
+                // Settings
+                profile: language === 'pt' ? 'Perfil' : 'Profile',
+                accountInfo: language === 'pt' ? 'Informações da conta' : 'Account information',
+                preferences: language === 'pt' ? 'Preferências' : 'Preferences',
+                notifications: language === 'pt' ? 'Notificações' : 'Notifications',
+                receiveReminders: language === 'pt' ? 'Receber lembretes' : 'Receive reminders',
+                darkMode: language === 'pt' ? 'Modo Escuro' : 'Dark Mode',
+                interfaceTheme: language === 'pt' ? 'Tema da interface' : 'Interface theme',
+                soundEffects: language === 'pt' ? 'Efeitos Sonoros' : 'Sound Effects',
+                audioFeedback: language === 'pt' ? 'Feedback de áudio' : 'Audio feedback',
+                language: language === 'pt' ? 'Idioma' : 'Language',
+                about: language === 'pt' ? 'Sobre' : 'About',
+                version: language === 'pt' ? 'Versão' : 'Version',
+                privacyPolicy: language === 'pt' ? 'Política de Privacidade' : 'Privacy Policy',
+                termsOfService: language === 'pt' ? 'Termos de Serviço' : 'Terms of Service',
+                signOut: language === 'pt' ? 'Sair' : 'Sign Out',
+                customizeExperience: language === 'pt' ? 'Personalize sua experiência' : 'Customize your experience',
+
+                // Login
+                welcomeBack: language === 'pt' ? 'Bem-vindo de volta! Por favor, faça login na sua conta.' : 'Welcome back! Please login to your account.',
+                username: language === 'pt' ? 'Nome de usuário' : 'Username',
+                password: language === 'pt' ? 'Senha' : 'Password',
+                enterUsername: language === 'pt' ? 'Digite seu nome de usuário' : 'Enter your username',
+                enterPassword: language === 'pt' ? 'Digite sua senha' : 'Enter your password',
+                rememberMe: language === 'pt' ? 'Lembrar de mim' : 'Remember me',
+                forgotPassword: language === 'pt' ? 'Esqueceu a senha?' : 'Forgot Password?',
+                login: language === 'pt' ? 'Entrar' : 'Login',
+                or: language === 'pt' ? 'OU' : 'OR',
+                dontHaveAccount: language === 'pt' ? 'Não tem uma conta?' : "Don't have an account?",
+                signUp: language === 'pt' ? 'Cadastre-se' : 'Sign up',
             };
 
             const categories = [
@@ -282,7 +428,7 @@
                                         : (darkMode ? 'bg-gray-800 text-gray-300 border border-gray-700' : 'bg-white text-gray-700 border border-gray-200')
                                         }`}
                                 >
-                                    Today
+                                    {t.today}
                                 </button>
                                 <button
                                     onClick={() => setViewMode('calendar')}
@@ -291,7 +437,7 @@
                                         : (darkMode ? 'bg-gray-800 text-gray-300 border border-gray-700' : 'bg-white text-gray-700 border border-gray-200')
                                         }`}
                                 >
-                                    Calendar
+                                    {t.calendar}
                                 </button>
                             </div>
                             <button className={`w-10 h-10 rounded-full flex items-center justify-center ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-900'}`}>
@@ -304,7 +450,7 @@
                         <div className="flex-1 overflow-y-auto px-6 animate-fade-in">
                             {/* Large Date Display */}
                             <div className="mb-6">
-                                <div className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Tuesday</div>
+                                <div className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.tuesday}</div>
                                 <div className="flex items-start gap-6">
                                     <div>
                                         <div className={`text-7xl font-bold leading-none mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>13.12</div>
@@ -326,8 +472,8 @@
                             {/* Tasks Section */}
                             <div className="mb-4">
                                 <div className="flex items-center justify-between mb-3">
-                                    <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Todays tasks</h3>
-                                    <button className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Reminders</button>
+                                    <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.todaysTasks}</h3>
+                                    <button className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.reminders}</button>
                                 </div>
 
                                 <div className="space-y-3">
@@ -348,14 +494,14 @@
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-3">
                                                     <div>
-                                                        <div className="text-xs text-gray-600 mb-0.5">Start</div>
+                                                        <div className="text-xs text-gray-600 mb-0.5">{t.start}</div>
                                                         <div className="text-sm font-bold text-gray-900">{meeting.startTime}</div>
                                                     </div>
                                                     <div className="px-3 py-1 bg-gray-900 text-white rounded-full text-xs font-semibold">
                                                         {meeting.duration}
                                                     </div>
                                                     <div>
-                                                        <div className="text-xs text-gray-600 mb-0.5">End</div>
+                                                        <div className="text-xs text-gray-600 mb-0.5">{t.end}</div>
                                                         <div className="text-sm font-bold text-gray-900">{meeting.endTime}</div>
                                                     </div>
                                                 </div>
@@ -525,7 +671,7 @@
 
                                 {/* Events for selected month */}
                                 <div className="mt-6">
-                                    <h3 className={`text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Events this month</h3>
+                                    <h3 className={`text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.eventsThisMonth}</h3>
                                     <div className="space-y-3">
                                         {Object.keys(events)
                                             .filter(dateStr => dateStr.startsWith(`2024-${String(monthData.number + 1).padStart(2, '0')}`))
@@ -550,7 +696,7 @@
                                             dateStr.startsWith(`2024-${String(monthData.number + 1).padStart(2, '0')}`)
                                         ).length === 0 && (
                                                 <div className={`text-center py-8 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                                                    No events this month
+                                                    {t.noEventsThisMonth}
                                                 </div>
                                             )}
                                     </div>
@@ -594,7 +740,7 @@
                                             <div className="text-center mb-3">
                                                 <h3 className="text-white font-bold text-lg mb-0.5">{month.name.toUpperCase()}</h3>
                                                 {monthEvents > 0 && (
-                                                    <div className="text-white/80 text-xs font-semibold">{monthEvents} event{monthEvents !== 1 ? 's' : ''}</div>
+                                                    <div className="text-white/80 text-xs font-semibold">{monthEvents} {monthEvents !== 1 ? t.events : t.event}</div>
                                                 )}
                                             </div>
 
@@ -697,7 +843,7 @@
                                 >
                                     <ChevronLeft size={20} />
                                 </button>
-                                <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>New Event</h1>
+                                <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.newEvent}</h1>
                             </div>
                             {selectedDate && (
                                 <div className={`rounded-2xl p-3 text-sm font-semibold ${darkMode ? 'bg-blue-900/30 border border-blue-700 text-blue-300' : 'bg-blue-50 border border-blue-200 text-blue-900'}`}>
@@ -714,10 +860,10 @@
                         <div className="flex-1 p-6 pt-0 overflow-y-auto">
                             <div className="space-y-4">
                                 <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Event Title</label>
+                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.eventTitle}</label>
                                     <input
                                         type="text"
-                                        placeholder="Team Meeting"
+                                        placeholder={language === 'pt' ? 'Reunião da Equipe' : 'Team Meeting'}
                                         value={eventTitle}
                                         onChange={(e) => setEventTitle(e.target.value)}
                                         className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 ${darkMode
@@ -729,7 +875,7 @@
 
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Date</label>
+                                        <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.date}</label>
                                         <input
                                             type="date"
                                             value={selectedDate || ''}
@@ -741,7 +887,7 @@
                                         />
                                     </div>
                                     <div>
-                                        <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Time</label>
+                                        <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.time}</label>
                                         <input
                                             type="time"
                                             value={eventTime}
@@ -755,7 +901,7 @@
                                 </div>
 
                                 <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Category</label>
+                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.category}</label>
                                     <div className="grid grid-cols-2 gap-2">
                                         {categories.map((cat, idx) => (
                                             <button
@@ -771,7 +917,7 @@
                                 </div>
 
                                 <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Color Theme</label>
+                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.colorTheme}</label>
                                     <div className="flex gap-2">
                                         {colorThemes.map((color, idx) => (
                                             <button
@@ -784,9 +930,9 @@
                                 </div>
 
                                 <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Description</label>
+                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.description}</label>
                                     <textarea
-                                        placeholder="Add details about this event..."
+                                        placeholder={t.addDetails}
                                         rows="4"
                                         value={eventDescription}
                                         onChange={(e) => setEventDescription(e.target.value)}
@@ -800,7 +946,7 @@
                                 <div className={`flex items-center justify-between rounded-2xl p-4 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
                                     <div className="flex items-center gap-3">
                                         <Bell className={darkMode ? 'text-gray-300' : 'text-gray-700'} size={20} />
-                                        <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Reminder</span>
+                                        <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.reminder}</span>
                                     </div>
                                     <label className="relative inline-block w-12 h-6">
                                         <input type="checkbox" defaultChecked className="opacity-0 w-0 h-0 peer" />
@@ -816,7 +962,7 @@
                                         : 'bg-gray-900 text-white hover:bg-gray-800'
                                         }`}
                                 >
-                                    Create Event
+                                    {t.createEvent}
                                 </button>
                             </div>
                         </div>
@@ -827,28 +973,28 @@
             const StatsScreen = () => (
                 <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
                     <div className="p-6">
-                        <h1 className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Statistics</h1>
-                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Your weekly progress</p>
+                        <h1 className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.statistics}</h1>
+                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.yourWeeklyProgress}</p>
                     </div>
 
                     <div className="flex-1 p-6 pt-0 overflow-y-auto">
                         <div className="grid grid-cols-2 gap-3 mb-6">
                             <div className={`rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                                <p className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Current Streak</p>
+                                <p className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.currentStreak}</p>
                                 <p className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>7</p>
-                                <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>days</p>
+                                <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.days}</p>
                             </div>
                             <div className={`rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                                <p className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Completion</p>
+                                <p className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.completion}</p>
                                 <p className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>85%</p>
-                                <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>this week</p>
+                                <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.thisWeek}</p>
                             </div>
                         </div>
 
                         <div className={`rounded-3xl p-5 shadow-sm border mb-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                            <h3 className={`font-bold mb-5 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Weekly Activity</h3>
+                            <h3 className={`font-bold mb-5 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.weeklyActivity}</h3>
                             <div className="flex items-end justify-between h-40 gap-3">
-                                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, idx) => (
+                                {[t.mon, t.tue, t.wed, t.thu, t.fri, t.sat, t.sun].map((day, idx) => (
                                     <div key={idx} className="flex-1 flex flex-col items-center gap-3">
                                         <div className={`w-full rounded-t-2xl ${darkMode ? 'bg-white' : 'bg-gray-900'}`} style={{ height: `${[60, 80, 95, 70, 85, 50, 40][idx]}%` }}></div>
                                         <span className={`text-xs font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{day}</span>
@@ -858,7 +1004,7 @@
                         </div>
 
                         <div className={`rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                            <h3 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Tasks by Category</h3>
+                            <h3 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.tasksByCategory}</h3>
                             <div className="space-y-4">
                                 {categories.map((cat, idx) => (
                                     <div key={idx}>
@@ -883,15 +1029,15 @@
             const ConfigScreen = () => (
                 <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
                     <div className="p-6">
-                        <h1 className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Settings</h1>
-                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Customize your experience</p>
+                        <h1 className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.settings}</h1>
+                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.customizeExperience}</p>
                     </div>
 
                     <div className="flex-1 p-6 pt-0 overflow-y-auto">
                         <div className={`rounded-3xl shadow-sm mb-4 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
                             <div className={`p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Profile</h3>
-                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Account information</p>
+                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.profile}</h3>
+                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.accountInfo}</p>
                             </div>
                             <div className="p-5">
                                 <div className="flex items-center gap-4">
@@ -911,13 +1057,13 @@
 
                         <div className={`rounded-3xl shadow-sm mb-4 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
                             <div className={`p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Preferences</h3>
+                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.preferences}</h3>
                             </div>
                             <div className="p-5 space-y-5">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Notifications</p>
-                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Receive reminders</p>
+                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.notifications}</p>
+                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.receiveReminders}</p>
                                     </div>
                                     <label className="relative inline-block w-12 h-6">
                                         <input type="checkbox" defaultChecked className="opacity-0 w-0 h-0 peer" />
@@ -927,8 +1073,8 @@
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Dark Mode</p>
-                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Interface theme</p>
+                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.darkMode}</p>
+                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.interfaceTheme}</p>
                                     </div>
                                     <label className="relative inline-block w-12 h-6">
                                         <input
@@ -943,8 +1089,8 @@
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Sound Effects</p>
-                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Audio feedback</p>
+                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.soundEffects}</p>
+                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.audioFeedback}</p>
                                     </div>
                                     <label className="relative inline-block w-12 h-6">
                                         <input type="checkbox" defaultChecked className="opacity-0 w-0 h-0 peer" />
@@ -952,24 +1098,98 @@
                                         <span className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-6"></span>
                                     </label>
                                 </div>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            {language === 'pt' ? 'Idioma' : 'Language'}
+                                        </p>
+                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            {language === 'pt' ? 'Português / English' : 'English / Português'}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={toggleLanguage}
+                                        className={`px-4 py-2 rounded-full font-semibold transition hover:scale-105 ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'
+                                            }`}
+                                    >
+                                        {language === 'pt' ? 'EN' : 'PT'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         <div className={`rounded-3xl shadow-sm mb-4 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
                             <div className={`p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>About</h3>
+                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    {language === 'pt' ? 'Exclusão Automática' : 'Auto Deletion'}
+                                </h3>
+                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                    {language === 'pt' ? 'Excluir eventos antigos automaticamente' : 'Automatically delete old events'}
+                                </p>
+                            </div>
+                            <div className="p-5">
+                                <div className="grid grid-cols-2 gap-3 mb-3">
+                                    <button
+                                        onClick={() => setAutoDeletion('off')}
+                                        className={`py-3 rounded-2xl font-semibold transition hover:scale-105 ${autoDeletion === 'off'
+                                            ? (darkMode ? 'bg-white text-gray-900 shadow-lg' : 'bg-gray-900 text-white shadow-lg')
+                                            : (darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700')
+                                            }`}
+                                    >
+                                        {language === 'pt' ? 'Desativado' : 'Off'}
+                                    </button>
+                                    <button
+                                        onClick={() => setAutoDeletion('30')}
+                                        className={`py-3 rounded-2xl font-semibold transition hover:scale-105 ${autoDeletion === '30'
+                                            ? (darkMode ? 'bg-white text-gray-900 shadow-lg' : 'bg-gray-900 text-white shadow-lg')
+                                            : (darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700')
+                                            }`}
+                                    >
+                                        {language === 'pt' ? '30 dias' : '30 days'}
+                                    </button>
+                                    <button
+                                        onClick={() => setAutoDeletion('60')}
+                                        className={`py-3 rounded-2xl font-semibold transition hover:scale-105 ${autoDeletion === '60'
+                                            ? (darkMode ? 'bg-white text-gray-900 shadow-lg' : 'bg-gray-900 text-white shadow-lg')
+                                            : (darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700')
+                                            }`}
+                                    >
+                                        {language === 'pt' ? '60 dias' : '60 days'}
+                                    </button>
+                                    <button
+                                        onClick={() => setAutoDeletion('120')}
+                                        className={`py-3 rounded-2xl font-semibold transition hover:scale-105 ${autoDeletion === '120'
+                                            ? (darkMode ? 'bg-white text-gray-900 shadow-lg' : 'bg-gray-900 text-white shadow-lg')
+                                            : (darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700')
+                                            }`}
+                                    >
+                                        {language === 'pt' ? '120 dias' : '120 days'}
+                                    </button>
+                                </div>
+                                <div className={`text-center text-sm font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                    {language === 'pt'
+                                        ? `Selecionado: ${getAutoDeletionText()}`
+                                        : `Selected: ${getAutoDeletionText()}`
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={`rounded-3xl shadow-sm mb-4 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.about}</h3>
                             </div>
                             <div className="p-5 space-y-4">
                                 <button className="w-full flex items-center justify-between">
-                                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Version</span>
+                                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.version}</span>
                                     <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>2.0.0</span>
                                 </button>
                                 <button className="w-full flex items-center justify-between">
-                                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Privacy Policy</span>
+                                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.privacyPolicy}</span>
                                     <ChevronRight size={20} className={darkMode ? 'text-gray-500' : 'text-gray-400'} />
                                 </button>
                                 <button className="w-full flex items-center justify-between">
-                                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Terms of Service</span>
+                                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.termsOfService}</span>
                                     <ChevronRight size={20} className={darkMode ? 'text-gray-500' : 'text-gray-400'} />
                                 </button>
                             </div>
@@ -979,7 +1199,7 @@
                             onClick={() => setIsLoggedIn(false)}
                             className="w-full bg-red-500 text-white py-4 rounded-3xl font-bold shadow-sm hover:bg-red-600 transition"
                         >
-                            Sign Out
+                            {t.signOut}
                         </button>
                     </div>
                 </div>
@@ -1055,14 +1275,14 @@
                                         </svg>
                                     </div>
                                     <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontFamily: "'Roboto Mono', monospace" }}>Schedio</h1>
-                                    <p className="text-gray-500 text-sm">Welcome back! Please login to your account.</p>
+                                    <p className="text-gray-500 text-sm">{t.welcomeBack}</p>
                                 </div>
 
                                 {/* Login Form */}
                                 <form onSubmit={handleLogin} className="space-y-5">
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Username
+                                            {t.username}
                                         </label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
@@ -1072,7 +1292,7 @@
                                                 type="text"
                                                 value={username}
                                                 onChange={(e) => setUsername(e.target.value)}
-                                                placeholder="Enter your username"
+                                                placeholder={t.enterUsername}
                                                 className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-purple-500 focus:bg-white transition text-gray-900 placeholder-gray-400"
                                                 required
                                             />
@@ -1081,7 +1301,7 @@
 
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Password
+                                            {t.password}
                                         </label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
@@ -1091,7 +1311,7 @@
                                                 type="password"
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
-                                                placeholder="Enter your password"
+                                                placeholder={t.enterPassword}
                                                 className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-purple-500 focus:bg-white transition text-gray-900 placeholder-gray-400"
                                                 required
                                             />
@@ -1101,10 +1321,10 @@
                                     <div className="flex items-center justify-between text-sm">
                                         <label className="flex items-center gap-2 cursor-pointer">
                                             <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" />
-                                            <span className="text-gray-600">Remember me</span>
+                                            <span className="text-gray-600">{t.rememberMe}</span>
                                         </label>
                                         <button type="button" className="text-purple-600 font-semibold hover:text-purple-700 transition">
-                                            Forgot Password?
+                                            {t.forgotPassword}
                                         </button>
                                     </div>
 
@@ -1113,14 +1333,14 @@
                                         className="w-full py-4 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
                                         style={{ backgroundColor: '#1b2e3c' }}
                                     >
-                                        Login
+                                        {t.login}
                                     </button>
                                 </form>
 
                                 {/* Divider */}
                                 <div className="flex items-center gap-4 my-6">
                                     <div className="flex-1 h-px bg-gray-200"></div>
-                                    <span className="text-gray-400 text-sm font-medium">OR</span>
+                                    <span className="text-gray-400 text-sm font-medium">{t.or}</span>
                                     <div className="flex-1 h-px bg-gray-200"></div>
                                 </div>
 
@@ -1136,9 +1356,9 @@
 
                                 {/* Sign Up Link */}
                                 <p className="text-center text-sm text-gray-600 mt-6">
-                                    Don't have an account?{' '}
+                                    {t.dontHaveAccount}{' '}
                                     <button className="text-purple-600 font-semibold hover:text-purple-700 transition">
-                                        Sign up
+                                        {t.signUp}
                                     </button>
                                 </p>
                             </div>
@@ -1159,7 +1379,7 @@
                                 }`}
                         >
                             <Home size={24} />
-                            <span className="text-xs font-semibold">Home</span>
+                            <span className="text-xs font-semibold">{t.home}</span>
                         </button>
                         <button
                             onClick={() => {
@@ -1170,7 +1390,7 @@
                                 }`}
                         >
                             <Calendar size={24} />
-                            <span className="text-xs font-semibold">Calendar</span>
+                            <span className="text-xs font-semibold">{t.calendar}</span>
                         </button>
                         <button
                             onClick={() => {
@@ -1189,7 +1409,7 @@
                                 }`}
                         >
                             <BarChart3 size={24} />
-                            <span className="text-xs font-semibold">Stats</span>
+                            <span className="text-xs font-semibold">{t.stats}</span>
                         </button>
                         <button
                             onClick={() => setCurrentScreen('config')}
@@ -1197,7 +1417,7 @@
                                 }`}
                         >
                             <Settings size={24} />
-                            <span className="text-xs font-semibold">Settings</span>
+                            <span className="text-xs font-semibold">{t.settings}</span>
                         </button>
                     </div>
                 </div>
