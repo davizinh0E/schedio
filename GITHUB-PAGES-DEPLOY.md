@@ -26,20 +26,22 @@ schedio/
 
 ### Optional Files (not needed on GitHub Pages):
 ```
-├── generate-icons.html   (Only for local icon generation)
+├── Untitled.png          (Original icon - not needed if you have the converted icons)
+├── convert-icon.html     (Only for local icon conversion)
 ├── start-server.bat      (Only for local testing)
 ├── start-server.ps1      (Only for local testing)
 ├── PWA-SETUP.md         (Documentation)
 └── QUICKSTART.md        (Documentation)
 ```
 
-## 🎨 Step 1: Generate Icons
+## 🎨 Step 1: Convert Your Icon
 
-1. **Run locally**: Open `generate-icons.html` in your browser
-2. **Download both icons**:
+1. **Run locally**: Open `convert-icon.html` in your browser
+2. **Upload**: Select your `Untitled.png` file
+3. **Download both icons**:
    - `icon-192.png`
    - `icon-512.png`
-3. **Add to repository**: Place them in your schedio folder
+4. **Add to repository**: Place them in your schedio folder
 
 ## 📤 Step 2: Deploy to GitHub Pages
 

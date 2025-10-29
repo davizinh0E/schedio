@@ -4,11 +4,11 @@ Quick checklist to deploy your Schedio PWA to GitHub Pages!
 
 ## Before Deployment
 
-- [ ] **Generate Icons**
-  - Open `generate-icons.html` in browser
-  - Download `icon-192.png`
-  - Download `icon-512.png`
-  - Save both in the schedio folder
+- [ ] **Convert Your Icon**
+  - Open `convert-icon.html` in browser
+  - Upload `Untitled.png`
+  - Click "Download Both Icons"
+  - Save as `icon-192.png` and `icon-512.png` in the schedio folder
 
 - [ ] **Verify Files Present**
   - [ ] schedio.html

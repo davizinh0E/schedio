@@ -17,13 +17,13 @@ I've configured your Schedio app as a Progressive Web App (PWA) optimized for yo
 
 ## 🎯 Next Steps (Quick!)
 
-### 1️⃣ Generate Icons (2 minutes)
+### 1️⃣ Convert Your Icon (2 minutes)
 
 ```bash
 # Open this file in your browser:
-generate-icons.html
+convert-icon.html
 
-# Download both icons and save them in your schedio folder as:
+# Upload your Untitled.png and download both converted icons:
 - icon-192.png
 - icon-512.png
 ```

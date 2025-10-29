@@ -12,11 +12,12 @@ Just visit the link and install it! No setup needed for users.
 
 ## 🔧 Local Development / Testing
 
-### Step 1: Generate Icons (2 minutes)
+### Step 1: Convert Your Icon (2 minutes)
 
-1. Double-click `generate-icons.html`
-2. Click both download buttons
-3. Save files as `icon-192.png` and `icon-512.png` in this folder
+1. Double-click `convert-icon.html`
+2. Upload your `Untitled.png`
+3. Click "Download Both Icons" button
+4. Save as `icon-192.png` and `icon-512.png` in this folder
 
 ### Step 2: Start Server (1 minute)
 

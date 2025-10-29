@@ -8,15 +8,16 @@ Your Schedio calendar app has been successfully converted to a Progressive Web A
 2. **service-worker.js** - Enables offline functionality and caching
 3. **PWA meta tags** - Added to schedio.html for better mobile support
 4. **Service Worker registration** - Automatically registers when the app loads
-5. **generate-icons.html** - Tool to create your app icons
+5. **convert-icon.html** - Tool to convert your icon to PWA sizes
 
 ## 🎨 Step 1: Generate Icons
 
-1. Open `generate-icons.html` in your browser
-2. Click both download buttons to save:
+1. Open `convert-icon.html` in your browser
+2. Upload your `Untitled.png` icon
+3. Click "Download Both Icons" to save:
    - `icon-192.png`
    - `icon-512.png`
-3. Place both icons in the same folder as `schedio.html`
+4. Place both icons in the same folder as `schedio.html`
 
 ## 🚀 Step 2: Serve Your App
 

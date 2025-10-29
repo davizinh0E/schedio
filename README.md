@@ -66,10 +66,10 @@ git clone https://github.com/davizinh0e/schedio.git
 cd schedio
 ```
 
-2. **Generate icons**
+2. **Convert your icon**
 ```bash
-# Open generate-icons.html in your browser
-# Download both icon files
+# Open convert-icon.html in your browser
+# Upload Untitled.png and download converted icons
 ```
 
 3. **Start local server**
@@ -95,7 +95,8 @@ schedio/
 ├── service-worker.js         # Service worker for offline support
 ├── icon-192.png             # App icon (192x192)
 ├── icon-512.png             # App icon (512x512)
-├── generate-icons.html      # Icon generator tool
+├── Untitled.png             # Original icon artwork
+├── convert-icon.html        # Icon converter tool
 ├── start-server.bat         # Windows server script
 ├── start-server.ps1         # PowerShell server script
 └── docs/
