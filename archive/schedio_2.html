@@ -16,8 +16,8 @@
     <link rel="manifest" href="manifest.json">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
-    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,66 +67,6 @@
         .event-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-
-        /* Semantic Container Classes */
-        .app-main-container {
-            max-width: 500px;
-        }
-
-        .screen-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .screen-header {
-            padding: 1.5rem;
-            padding-bottom: 1rem;
-        }
-
-        .screen-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.5rem;
-            padding-top: 0;
-        }
-
-        .date-display-section {
-            margin-bottom: 1.5rem;
-        }
-
-        .task-list-section {
-            margin-bottom: 1rem;
-        }
-
-        .calendar-grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-
-        .navigation-bar {
-            padding: 1rem 1.5rem;
-        }
-
-        .form-container {
-            padding: 1.5rem;
-            padding-top: 0;
-            overflow-y: auto;
-        }
-
-        .stats-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .settings-section {
-            border-radius: 1.5rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            margin-bottom: 1rem;
         }
     </style>
 </head>
@@ -491,10 +431,10 @@
             };
 
             const HomeScreen = () => (
-                <div className={`screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
                     {/* Header with view toggle */}
-                    <div className="screen-header">
-                        <div className="view-toggle-section flex items-center justify-between mb-6">
+                    <div className="p-6 pb-4">
+                        <div className="flex items-center justify-between mb-6">
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setViewMode('today')}
@@ -522,16 +462,16 @@
                     </div>
 
                     {viewMode === 'today' ? (
-                        <div className="today-view-content screen-content animate-fade-in">
+                        <div className="flex-1 overflow-y-auto px-6 animate-fade-in">
                             {/* Large Date Display */}
-                            <div className="date-display-section">
-                                <div className={`day-label text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.tuesday}</div>
-                                <div className="date-time-container flex items-start gap-6">
-                                    <div className="main-date-display">
-                                        <div className={`date-number text-7xl font-bold leading-none mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>13.12</div>
-                                        <div className={`month-label text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>DEC</div>
+                            <div className="mb-6">
+                                <div className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.tuesday}</div>
+                                <div className="flex items-start gap-6">
+                                    <div>
+                                        <div className={`text-7xl font-bold leading-none mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>13.12</div>
+                                        <div className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>DEC</div>
                                     </div>
-                                    <div className="timezone-clocks flex flex-col gap-3 mt-2">
+                                    <div className="flex flex-col gap-3 mt-2">
                                         <div className="text-right">
                                             <div className={`text-2xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>1:20 PM</div>
                                             <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>New York</div>
@@ -545,20 +485,20 @@
                             </div>
 
                             {/* Tasks Section */}
-                            <div className="task-list-section">
-                                <div className="task-header flex items-center justify-between mb-3">
-                                    <h3 className={`section-title text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.todaysTasks}</h3>
-                                    <button className={`reminders-button text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.reminders}</button>
+                            <div className="mb-4">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.todaysTasks}</h3>
+                                    <button className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.reminders}</button>
                                 </div>
 
-                                <div className="task-cards-list space-y-3">
+                                <div className="space-y-3">
                                     {meetings.map((meeting, idx) => (
-                                        <div key={idx} className={`task-card ${meeting.color} rounded-3xl p-4 event-card shadow-sm`}>
-                                            <div className="task-card-header flex items-start justify-between mb-3">
-                                                <div className="task-info flex-1">
-                                                    <h4 className="task-title text-lg font-bold text-gray-800 mb-1">{meeting.title}</h4>
+                                        <div key={idx} className={`${meeting.color} rounded-3xl p-4 event-card shadow-sm`}>
+                                            <div className="flex items-start justify-between mb-3">
+                                                <div className="flex-1">
+                                                    <h4 className="text-lg font-bold text-gray-800 mb-1">{meeting.title}</h4>
                                                 </div>
-                                                <div className="avatar-group flex -space-x-2">
+                                                <div className="flex -space-x-2">
                                                     {meeting.avatars.map((avatar, i) => (
                                                         <div key={i} className="w-8 h-8 rounded-full bg-white border-2 border-white flex items-center justify-center text-sm">
                                                             {avatar}
@@ -566,18 +506,18 @@
                                                     ))}
                                                 </div>
                                             </div>
-                                            <div className="task-card-footer flex items-center justify-between">
-                                                <div className="task-timing flex items-center gap-3">
-                                                    <div className="start-time-group">
-                                                        <div className="time-label text-xs text-gray-600 mb-0.5">{t.start}</div>
-                                                        <div className="time-value text-sm font-bold text-gray-900">{meeting.startTime}</div>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div>
+                                                        <div className="text-xs text-gray-600 mb-0.5">{t.start}</div>
+                                                        <div className="text-sm font-bold text-gray-900">{meeting.startTime}</div>
                                                     </div>
-                                                    <div className="duration-badge px-3 py-1 bg-gray-900 text-white rounded-full text-xs font-semibold">
+                                                    <div className="px-3 py-1 bg-gray-900 text-white rounded-full text-xs font-semibold">
                                                         {meeting.duration}
                                                     </div>
-                                                    <div className="end-time-group">
-                                                        <div className="time-label text-xs text-gray-600 mb-0.5">{t.end}</div>
-                                                        <div className="time-value text-sm font-bold text-gray-900">{meeting.endTime}</div>
+                                                    <div>
+                                                        <div className="text-xs text-gray-600 mb-0.5">{t.end}</div>
+                                                        <div className="text-sm font-bold text-gray-900">{meeting.endTime}</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -587,9 +527,9 @@
                             </div>
                         </div>
                     ) : (
-                        <div className="calendar-view-content screen-content animate-fade-in">
+                        <div className="flex-1 overflow-y-auto px-6 animate-fade-in">
                             {/* Calendar Month Navigation */}
-                            <div className="month-navigation flex items-center justify-between mb-6">
+                            <div className="flex items-center justify-between mb-6">
                                 <button className="text-gray-400"><ChevronLeft size={24} /></button>
                                 <div className="flex items-center gap-4 text-sm font-semibold text-gray-400">
                                     <span>NOV</span>
@@ -600,20 +540,20 @@
                             </div>
 
                             {/* Week Schedule Cards */}
-                            <div className="week-schedule-cards space-y-3 pb-6">
+                            <div className="space-y-3 pb-6">
                                 {weekSchedule.map((day, idx) => (
-                                    <div key={idx} className={`day-schedule-card bg-gradient-to-br ${day.color} rounded-3xl p-5 event-card shadow-sm`}>
-                                        <div className="day-card-header flex items-start justify-between mb-4">
-                                            <div className="date-info">
-                                                <div className="weekday-name text-sm text-gray-700 mb-1">{day.day}</div>
-                                                <div className="date-display flex items-end gap-2">
-                                                    <div className="day-number text-5xl font-bold text-gray-900">{day.date}</div>
-                                                    <div className="month-name text-2xl font-bold text-gray-900 mb-1">{day.month}</div>
+                                    <div key={idx} className={`bg-gradient-to-br ${day.color} rounded-3xl p-5 event-card shadow-sm`}>
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div>
+                                                <div className="text-sm text-gray-700 mb-1">{day.day}</div>
+                                                <div className="flex items-end gap-2">
+                                                    <div className="text-5xl font-bold text-gray-900">{day.date}</div>
+                                                    <div className="text-2xl font-bold text-gray-900 mb-1">{day.month}</div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="hourly-slots flex items-center gap-3">
+                                        <div className="flex items-center gap-3">
                                             {['9 am', '10 am', '11 am', '3 pm', '4 pm', '5 pm'].map((time, i) => (
                                                 <div key={i} className="flex-1">
                                                     <div className="text-xs text-gray-600 mb-2">{time}</div>
@@ -678,9 +618,9 @@
                     const calendarDays = generateCalendar(monthData);
 
                     return (
-                        <div className={`month-detail-view screen-container animate-fade-in ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
-                            <div className="screen-header">
-                                <div className="calendar-navigation flex items-center justify-between mb-4">
+                        <div className={`flex flex-col h-full animate-fade-in ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                            <div className="p-6">
+                                <div className="flex items-center justify-between mb-4">
                                     <button
                                         onClick={() => setSelectedMonth(null)}
                                         className={`w-10 h-10 rounded-full flex items-center justify-center shadow-sm ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
@@ -702,16 +642,16 @@
                                 </div>
                             </div>
 
-                            <div className="month-calendar-content screen-content">
-                                <div className={`calendar-month-grid bg-gradient-to-br ${monthData.color} rounded-3xl p-6 shadow-lg`}>
-                                    <div className="weekday-headers grid grid-cols-7 gap-3 mb-3">
+                            <div className="flex-1 overflow-y-auto px-6 pb-6">
+                                <div className={`bg-gradient-to-br ${monthData.color} rounded-3xl p-6 shadow-lg`}>
+                                    <div className="grid grid-cols-7 gap-3 mb-3">
                                         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                                            <div key={i} className="weekday-header text-center text-sm font-bold text-white/80">
+                                            <div key={i} className="text-center text-sm font-bold text-white/80">
                                                 {day}
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="calendar-days-grid grid grid-cols-7 gap-3">
+                                    <div className="grid grid-cols-7 gap-3">
                                         {calendarDays.map((date, i) => {
                                             const dateStr = date ? `2025-${String(monthData.number + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}` : null;
                                             const hasEvents = dateStr && events[dateStr];
@@ -745,9 +685,9 @@
                                 </div>
 
                                 {/* Events for selected month */}
-                                <div className="month-events-section mt-6">
-                                    <h3 className={`section-title text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.eventsThisMonth}</h3>
-                                    <div className="event-list space-y-3">
+                                <div className="mt-6">
+                                    <h3 className={`text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.eventsThisMonth}</h3>
+                                    <div className="space-y-3">
                                         {Object.keys(events)
                                             .filter(dateStr => dateStr.startsWith(`2025-${String(monthData.number + 1).padStart(2, '0')}`))
                                             .sort()
@@ -783,9 +723,9 @@
 
                 // Year overview
                 return (
-                    <div className={`year-overview screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
-                        <div className="screen-header">
-                            <div className="year-header flex items-center justify-between mb-4">
+                    <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                        <div className="p-6">
+                            <div className="flex items-center justify-between mb-4">
                                 <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                                     2025
                                 </div>
@@ -798,8 +738,8 @@
                             </div>
                         </div>
 
-                        <div className="year-months-content screen-content">
-                            <div className="calendar-grid-container">
+                        <div className="flex-1 overflow-y-auto px-4 pb-6">
+                            <div className="grid grid-cols-2 gap-4">
                                 {months.map((month) => {
                                     const isCurrent = month.number === currentMonthIndex;
                                     const monthEvents = Object.keys(events).filter(dateStr =>
@@ -810,24 +750,24 @@
                                         <button
                                             key={month.number}
                                             onClick={() => setSelectedMonth(month.number)}
-                                            className={`month-card bg-gradient-to-br ${month.color} rounded-3xl p-4 shadow-md event-card ${isCurrent ? 'ring-4 ring-gray-900' : ''}`}
+                                            className={`bg-gradient-to-br ${month.color} rounded-3xl p-4 shadow-md event-card ${isCurrent ? 'ring-4 ring-gray-900' : ''}`}
                                         >
-                                            <div className="month-card-header text-center mb-3">
-                                                <h3 className="month-name text-white font-bold text-lg mb-0.5">{month.name.toUpperCase()}</h3>
+                                            <div className="text-center mb-3">
+                                                <h3 className="text-white font-bold text-lg mb-0.5">{month.name.toUpperCase()}</h3>
                                                 {monthEvents > 0 && (
-                                                    <div className="event-count text-white/80 text-xs font-semibold">{monthEvents} {monthEvents !== 1 ? t.events : t.event}</div>
+                                                    <div className="text-white/80 text-xs font-semibold">{monthEvents} {monthEvents !== 1 ? t.events : t.event}</div>
                                                 )}
                                             </div>
 
-                                            <div className="mini-calendar bg-white/20 backdrop-blur-sm rounded-2xl p-3">
-                                                <div className="mini-weekday-headers grid grid-cols-7 gap-1 mb-2">
+                                            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3">
+                                                <div className="grid grid-cols-7 gap-1 mb-2">
                                                     {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                                                        <div key={i} className="mini-weekday-header text-center text-[8px] font-bold text-white/70">
+                                                        <div key={i} className="text-center text-[8px] font-bold text-white/70">
                                                             {day}
                                                         </div>
                                                     ))}
                                                 </div>
-                                                <div className="mini-calendar-days grid grid-cols-7 gap-1">
+                                                <div className="grid grid-cols-7 gap-1">
                                                     {generateCalendar(month).map((date, i) => {
                                                         const dateStr = date ? `2025-${String(month.number + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}` : null;
                                                         const hasEvents = dateStr && events[dateStr];
@@ -906,9 +846,9 @@
                 };
 
                 return (
-                    <div className={`add-task-screen screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
-                        <div className="screen-header">
-                            <div className="header-navigation flex items-center gap-3 mb-6">
+                    <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                        <div className="p-6 pb-4">
+                            <div className="flex items-center gap-3 mb-6">
                                 <button
                                     onClick={() => {
                                         setSelectedDate(null);
@@ -921,7 +861,7 @@
                                 <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.newEvent}</h1>
                             </div>
                             {selectedDate && (
-                                <div className={`selected-date-badge rounded-2xl p-3 text-sm font-semibold ${darkMode ? 'bg-blue-900/30 border border-blue-700 text-blue-300' : 'bg-blue-50 border border-blue-200 text-blue-900'}`}>
+                                <div className={`rounded-2xl p-3 text-sm font-semibold ${darkMode ? 'bg-blue-900/30 border border-blue-700 text-blue-300' : 'bg-blue-50 border border-blue-200 text-blue-900'}`}>
                                     📅 {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
                                         weekday: 'long',
                                         year: 'numeric',
@@ -932,9 +872,9 @@
                             )}
                         </div>
 
-                        <div className="form-container">
-                            <div className="event-form space-y-4">
-                                <div className="form-field-group">
+                        <div className="flex-1 p-6 pt-0 overflow-y-auto">
+                            <div className="space-y-4">
+                                <div>
                                     <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.eventTitle}</label>
                                     <input
                                         type="text"
@@ -948,9 +888,9 @@
                                     />
                                 </div>
 
-                                <div className="date-time-fields grid grid-cols-2 gap-3">
-                                    <div className="form-field-group">
-                                        <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.date}</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.date}</label>
                                         <input
                                             type="date"
                                             value={selectedDate || ''}
@@ -961,8 +901,8 @@
                                                 }`}
                                         />
                                     </div>
-                                    <div className="form-field-group">
-                                        <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.time}</label>
+                                    <div>
+                                        <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.time}</label>
                                         <input
                                             type="time"
                                             value={eventTime}
@@ -975,9 +915,9 @@
                                     </div>
                                 </div>
 
-                                <div className="form-field-group">
-                                    <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.category}</label>
-                                    <div className="category-buttons grid grid-cols-2 gap-2">
+                                <div>
+                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.category}</label>
+                                    <div className="grid grid-cols-2 gap-2">
                                         {categories.map((cat, idx) => (
                                             <button
                                                 key={idx}
@@ -991,9 +931,9 @@
                                     </div>
                                 </div>
 
-                                <div className="form-field-group">
-                                    <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.colorTheme}</label>
-                                    <div className="color-picker flex gap-2">
+                                <div>
+                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.colorTheme}</label>
+                                    <div className="flex gap-2">
                                         {colorThemes.map((color, idx) => (
                                             <button
                                                 key={idx}
@@ -1004,8 +944,8 @@
                                     </div>
                                 </div>
 
-                                <div className="form-field-group">
-                                    <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.description}</label>
+                                <div>
+                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.description}</label>
                                     <textarea
                                         placeholder={t.addDetails}
                                         rows="4"
@@ -1018,7 +958,7 @@
                                     ></textarea>
                                 </div>
 
-                                <div className={`reminder-toggle flex items-center justify-between rounded-2xl p-4 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                                <div className={`flex items-center justify-between rounded-2xl p-4 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
                                     <div className="flex items-center gap-3">
                                         <Bell className={darkMode ? 'text-gray-300' : 'text-gray-700'} size={20} />
                                         <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.reminder}</span>
@@ -1046,52 +986,52 @@
             };
 
             const StatsScreen = () => (
-                <div className={`stats-screen screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
-                    <div className="screen-header">
-                        <h1 className={`screen-title text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.statistics}</h1>
-                        <p className={`screen-subtitle text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.yourWeeklyProgress}</p>
+                <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                    <div className="p-6">
+                        <h1 className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.statistics}</h1>
+                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.yourWeeklyProgress}</p>
                     </div>
 
-                    <div className="stats-content screen-content">
-                        <div className="stats-cards-grid">
-                            <div className={`stat-card rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                                <p className={`stat-label text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.currentStreak}</p>
-                                <p className={`stat-value text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>7</p>
-                                <p className={`stat-unit text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.days}</p>
+                    <div className="flex-1 p-6 pt-0 overflow-y-auto">
+                        <div className="grid grid-cols-2 gap-3 mb-6">
+                            <div className={`rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                                <p className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.currentStreak}</p>
+                                <p className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>7</p>
+                                <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.days}</p>
                             </div>
-                            <div className={`stat-card rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                                <p className={`stat-label text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.completion}</p>
-                                <p className={`stat-value text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>85%</p>
-                                <p className={`stat-unit text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.thisWeek}</p>
+                            <div className={`rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                                <p className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.completion}</p>
+                                <p className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>85%</p>
+                                <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.thisWeek}</p>
                             </div>
                         </div>
 
-                        <div className={`weekly-activity-card rounded-3xl p-5 shadow-sm border mb-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                            <h3 className={`card-title font-bold mb-5 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.weeklyActivity}</h3>
-                            <div className="activity-chart flex items-end justify-between h-40 gap-3">
+                        <div className={`rounded-3xl p-5 shadow-sm border mb-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                            <h3 className={`font-bold mb-5 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.weeklyActivity}</h3>
+                            <div className="flex items-end justify-between h-40 gap-3">
                                 {[t.mon, t.tue, t.wed, t.thu, t.fri, t.sat, t.sun].map((day, idx) => (
-                                    <div key={idx} className="chart-bar flex-1 flex flex-col items-center gap-3">
-                                        <div className={`bar-fill w-full rounded-t-2xl ${darkMode ? 'bg-white' : 'bg-gray-900'}`} style={{ height: `${[60, 80, 95, 70, 85, 50, 40][idx]}%` }}></div>
-                                        <span className={`bar-label text-xs font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{day}</span>
+                                    <div key={idx} className="flex-1 flex flex-col items-center gap-3">
+                                        <div className={`w-full rounded-t-2xl ${darkMode ? 'bg-white' : 'bg-gray-900'}`} style={{ height: `${[60, 80, 95, 70, 85, 50, 40][idx]}%` }}></div>
+                                        <span className={`text-xs font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{day}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        <div className={`category-stats-card rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                            <h3 className={`card-title font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.tasksByCategory}</h3>
-                            <div className="category-list space-y-4">
+                        <div className={`rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                            <h3 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.tasksByCategory}</h3>
+                            <div className="space-y-4">
                                 {categories.map((cat, idx) => (
-                                    <div key={idx} className="category-item">
-                                        <div className="category-header flex items-center justify-between mb-2">
-                                            <div className="category-name-wrapper flex items-center gap-2">
-                                                <div className={`category-indicator w-3 h-3 rounded-full ${cat.color}`}></div>
-                                                <span className={`category-name text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{cat.name}</span>
+                                    <div key={idx}>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-3 h-3 rounded-full ${cat.color}`}></div>
+                                                <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{cat.name}</span>
                                             </div>
-                                            <span className={`category-count text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{[12, 18, 8, 15][idx]}</span>
+                                            <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{[12, 18, 8, 15][idx]}</span>
                                         </div>
-                                        <div className={`progress-bar-track w-full rounded-full h-2.5 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                                            <div className={`progress-bar-fill ${cat.color} rounded-full h-2.5`} style={{ width: `${[60, 90, 40, 75][idx]}%` }}></div>
+                                        <div className={`w-full rounded-full h-2.5 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                                            <div className={`${cat.color} rounded-full h-2.5`} style={{ width: `${[60, 90, 40, 75][idx]}%` }}></div>
                                         </div>
                                     </div>
                                 ))}
@@ -1102,19 +1042,19 @@
             );
 
             const ConfigScreen = () => (
-                <div className={`config-screen screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
-                    <div className="screen-header">
-                        <h1 className={`screen-title text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.settings}</h1>
-                        <p className={`screen-subtitle text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.customizeExperience}</p>
+                <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                    <div className="p-6">
+                        <h1 className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.settings}</h1>
+                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.customizeExperience}</p>
                     </div>
 
-                    <div className="settings-content screen-content">
-                        <div className={`profile-section settings-section ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
-                            <div className={`section-header p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                                <h3 className={`section-title font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.profile}</h3>
-                                <p className={`section-subtitle text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.accountInfo}</p>
+                    <div className="flex-1 p-6 pt-0 overflow-y-auto">
+                        <div className={`rounded-3xl shadow-sm mb-4 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.profile}</h3>
+                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.accountInfo}</p>
                             </div>
-                            <div className="profile-info p-5">
+                            <div className="p-5">
                                 <div className="flex items-center gap-4">
                                     <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'}`}>
                                         U
@@ -1130,28 +1070,28 @@
                             </div>
                         </div>
 
-                        <div className={`preferences-section settings-section ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
-                            <div className={`section-header p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                                <h3 className={`section-title font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.preferences}</h3>
+                        <div className={`rounded-3xl shadow-sm mb-4 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.preferences}</h3>
                             </div>
-                            <div className="preferences-list p-5 space-y-5">
-                                <div className="preference-item flex items-center justify-between">
-                                    <div className="preference-info">
-                                        <p className={`preference-label font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.notifications}</p>
-                                        <p className={`preference-description text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.receiveReminders}</p>
+                            <div className="p-5 space-y-5">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.notifications}</p>
+                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.receiveReminders}</p>
                                     </div>
-                                    <label className="toggle-switch relative inline-block w-12 h-6">
+                                    <label className="relative inline-block w-12 h-6">
                                         <input type="checkbox" defaultChecked className="opacity-0 w-0 h-0 peer" />
                                         <span className={`absolute cursor-pointer inset-0 rounded-full transition ${darkMode ? 'peer-checked:bg-white bg-gray-700' : 'bg-gray-300 peer-checked:bg-gray-900'}`}></span>
                                         <span className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-6"></span>
                                     </label>
                                 </div>
-                                <div className="preference-item flex items-center justify-between">
-                                    <div className="preference-info">
-                                        <p className={`preference-label font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.darkMode}</p>
-                                        <p className={`preference-description text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.interfaceTheme}</p>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.darkMode}</p>
+                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.interfaceTheme}</p>
                                     </div>
-                                    <label className="toggle-switch relative inline-block w-12 h-6">
+                                    <label className="relative inline-block w-12 h-6">
                                         <input
                                             type="checkbox"
                                             checked={darkMode}
@@ -1162,29 +1102,29 @@
                                         <span className={`absolute top-1 w-4 h-4 rounded-full transition ${darkMode ? 'left-7 bg-gray-900' : 'left-1 bg-white'}`}></span>
                                     </label>
                                 </div>
-                                <div className="preference-item flex items-center justify-between">
-                                    <div className="preference-info">
-                                        <p className={`preference-label font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.soundEffects}</p>
-                                        <p className={`preference-description text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.audioFeedback}</p>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.soundEffects}</p>
+                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.audioFeedback}</p>
                                     </div>
-                                    <label className="toggle-switch relative inline-block w-12 h-6">
+                                    <label className="relative inline-block w-12 h-6">
                                         <input type="checkbox" defaultChecked className="opacity-0 w-0 h-0 peer" />
                                         <span className={`absolute cursor-pointer inset-0 rounded-full transition ${darkMode ? 'peer-checked:bg-white bg-gray-700' : 'bg-gray-300 peer-checked:bg-gray-900'}`}></span>
                                         <span className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-6"></span>
                                     </label>
                                 </div>
-                                <div className="preference-item flex items-center justify-between">
-                                    <div className="preference-info">
-                                        <p className={`preference-label font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                                             {language === 'pt' ? 'Idioma' : 'Language'}
                                         </p>
-                                        <p className={`preference-description text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                             {language === 'pt' ? 'Português / English' : 'English / Português'}
                                         </p>
                                     </div>
                                     <button
                                         onClick={toggleLanguage}
-                                        className={`language-toggle-button px-4 py-2 rounded-full font-semibold transition hover:scale-105 ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'
+                                        className={`px-4 py-2 rounded-full font-semibold transition hover:scale-105 ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'
                                             }`}
                                     >
                                         {language === 'pt' ? 'EN' : 'PT'}
@@ -1193,16 +1133,16 @@
                             </div>
                         </div>
 
-                        <div className={`auto-deletion-section settings-section ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
-                            <div className={`section-header p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                                <h3 className={`section-title font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <div className={`rounded-3xl shadow-sm mb-4 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                                     {language === 'pt' ? 'Exclusão Automática' : 'Auto Deletion'}
                                 </h3>
-                                <p className={`section-subtitle text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                     {language === 'pt' ? 'Excluir eventos antigos automaticamente' : 'Automatically delete old events'}
                                 </p>
                             </div>
-                            <div className="deletion-options p-5">
+                            <div className="p-5">
                                 <div className="grid grid-cols-2 gap-3 mb-3">
                                     <button
                                         onClick={() => setAutoDeletion('off')}
@@ -1250,11 +1190,11 @@
                             </div>
                         </div>
 
-                        <div className={`about-section settings-section ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
-                            <div className={`section-header p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                                <h3 className={`section-title font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.about}</h3>
+                        <div className={`rounded-3xl shadow-sm mb-4 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.about}</h3>
                             </div>
-                            <div className="about-links p-5 space-y-4">
+                            <div className="p-5 space-y-4">
                                 <button className="w-full flex items-center justify-between">
                                     <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.version}</span>
                                     <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>2.1.0</span>
@@ -1293,11 +1233,11 @@
                 };
 
                 return (
-                    <div className="login-screen-wrapper w-full h-screen flex items-center justify-center bg-white">
-                        <div className="login-container app-main-container w-full mx-auto h-screen bg-light rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center animate-fade-in">
-                            <div className="login-form-wrapper p-8 w-full">
+                    <div className="w-full h-screen flex items-center justify-center bg-white">
+                        <div className="w-full mx-auto h-screen bg-light rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center animate-fade-in" style={{ maxWidth: '500px' }}>
+                            <div className="p-8 w-full">
                                 {/* Logo/Header */}
-                                <div className="login-header text-center mb-8">
+                                <div className="text-center mb-8">
                                     <div className="inline-flex items-center justify-center mb-4">
                                         <svg width="96" height="96" viewBox="0 0 200 200" className="mx-auto rounded-3xl" style={{ background: '#2c4a5f' }}>
                                             {/* Decorative stars */}
@@ -1354,13 +1294,13 @@
                                 </div>
 
                                 {/* Login Form */}
-                                <form onSubmit={handleLogin} className="login-form space-y-5">
-                                    <div className="form-field-group">
-                                        <label className="form-label block text-sm font-semibold text-gray-700 mb-2">
+                                <form onSubmit={handleLogin} className="space-y-5">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
                                             {t.username}
                                         </label>
-                                        <div className="input-wrapper relative">
-                                            <div className="input-icon absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                        <div className="relative">
+                                            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                                                 <User size={20} className="text-gray-400" />
                                             </div>
                                             <input
@@ -1374,12 +1314,12 @@
                                         </div>
                                     </div>
 
-                                    <div className="form-field-group">
-                                        <label className="form-label block text-sm font-semibold text-gray-700 mb-2">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
                                             {t.password}
                                         </label>
-                                        <div className="input-wrapper relative">
-                                            <div className="input-icon absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                        <div className="relative">
+                                            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                                                 <Lock size={20} className="text-gray-400" />
                                             </div>
                                             <input
@@ -1393,12 +1333,12 @@
                                         </div>
                                     </div>
 
-                                    <div className="login-options flex items-center justify-between text-sm">
-                                        <label className="remember-me-checkbox flex items-center gap-2 cursor-pointer">
+                                    <div className="flex items-center justify-between text-sm">
+                                        <label className="flex items-center gap-2 cursor-pointer">
                                             <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" />
                                             <span className="text-gray-600">{t.rememberMe}</span>
                                         </label>
-                                        <button type="button" className="forgot-password-link text-purple-600 font-semibold hover:text-purple-700 transition">
+                                        <button type="button" className="text-purple-600 font-semibold hover:text-purple-700 transition">
                                             {t.forgotPassword}
                                         </button>
                                     </div>
@@ -1413,14 +1353,14 @@
                                 </form>
 
                                 {/* Divider */}
-                                <div className="login-divider flex items-center gap-4 my-6">
-                                    <div className="divider-line flex-1 h-px bg-gray-200"></div>
-                                    <span className="divider-text text-gray-400 text-sm font-medium">{t.or}</span>
-                                    <div className="divider-line flex-1 h-px bg-gray-200"></div>
+                                <div className="flex items-center gap-4 my-6">
+                                    <div className="flex-1 h-px bg-gray-200"></div>
+                                    <span className="text-gray-400 text-sm font-medium">{t.or}</span>
+                                    <div className="flex-1 h-px bg-gray-200"></div>
                                 </div>
 
                                 {/* Social Login Buttons */}
-                                <div className="social-login-buttons grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-2 gap-3">
                                     <button className="py-3 border-2 border-gray-200 rounded-2xl font-semibold text-gray-700 hover:bg-gray-50 transition">
                                         Google
                                     </button>
@@ -1430,9 +1370,9 @@
                                 </div>
 
                                 {/* Sign Up Link */}
-                                <p className="signup-prompt text-center text-sm text-gray-600 mt-6">
+                                <p className="text-center text-sm text-gray-600 mt-6">
                                     {t.dontHaveAccount}{' '}
-                                    <button className="signup-link text-purple-600 font-semibold hover:text-purple-700 transition">
+                                    <button className="text-purple-600 font-semibold hover:text-purple-700 transition">
                                         {t.signUp}
                                     </button>
                                 </p>
@@ -1443,56 +1383,56 @@
             };
 
             const BottomNav = () => (
-                <div className={`navigation-bar bottom-navigation border-t ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                    <div className="nav-items-container flex items-center justify-around max-w-md mx-auto">
+                <div className={`px-6 py-4 border-t ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                    <div className="flex items-center justify-around max-w-md mx-auto">
                         <button
                             onClick={() => {
                                 setViewMode('today');
                                 setCurrentScreen('home');
                             }}
-                            className={`nav-item home-nav-item flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'home' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                            className={`flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'home' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
                                 }`}
                         >
                             <Home size={22} />
-                            <span className="nav-label text-[10px] font-semibold">{t.home}</span>
+                            <span className="text-[10px] font-semibold">{t.home}</span>
                         </button>
                         <button
                             onClick={() => {
                                 setSelectedMonth(null);
                                 setCurrentScreen('calendar');
                             }}
-                            className={`nav-item calendar-nav-item flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'calendar' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                            className={`flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'calendar' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
                                 }`}
                         >
                             <Calendar size={22} />
-                            <span className="nav-label text-[10px] font-semibold">{t.calendar}</span>
+                            <span className="text-[10px] font-semibold">{t.calendar}</span>
                         </button>
                         <button
                             onClick={() => {
                                 setSelectedDate(null);
                                 setCurrentScreen('add');
                             }}
-                            className="nav-item add-nav-item flex flex-col items-center gap-1 text-white min-w-[52px]"
+                            className="flex flex-col items-center gap-1 text-white min-w-[52px]"
                         >
-                            <div className={`add-button-circle p-3.5 rounded-2xl -mt-6 shadow-lg ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900'}`}>
+                            <div className={`p-3.5 rounded-2xl -mt-6 shadow-lg ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900'}`}>
                                 <Plus size={24} />
                             </div>
                         </button>
                         <button
                             onClick={() => setCurrentScreen('stats')}
-                            className={`nav-item stats-nav-item flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'stats' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                            className={`flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'stats' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
                                 }`}
                         >
                             <BarChart3 size={22} />
-                            <span className="nav-label text-[10px] font-semibold">{t.stats}</span>
+                            <span className="text-[10px] font-semibold">{t.stats}</span>
                         </button>
                         <button
                             onClick={() => setCurrentScreen('config')}
-                            className={`nav-item settings-nav-item flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'config' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                            className={`flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'config' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
                                 }`}
                         >
                             <Settings size={22} />
-                            <span className="nav-label text-[10px] font-semibold leading-tight">{t.settings}</span>
+                            <span className="text-[10px] font-semibold leading-tight">{t.settings}</span>
                         </button>
                     </div>
                 </div>
@@ -1505,9 +1445,9 @@
 
             // Show main app if logged in
             return (
-                <div className="app-wrapper w-full h-screen flex items-center justify-center bg-white">
-                    <div className={`app-container app-main-container w-full mx-auto h-screen flex flex-col ${darkMode ? 'bg-gray-900' : 'bg-light'} rounded-3xl shadow-2xl overflow-hidden`}>
-                        <div className="screens-container flex-1 overflow-hidden">
+                <div className="w-full h-screen flex items-center justify-center bg-white">
+                    <div className={`w-full mx-auto h-screen flex flex-col ${darkMode ? 'bg-gray-900' : 'bg-light'} rounded-3xl shadow-2xl overflow-hidden`} style={{ maxWidth: '500px' }}>
+                        <div className="flex-1 overflow-hidden">
                             {currentScreen === 'home' && <HomeScreen />}
                             {currentScreen === 'calendar' && <CalendarScreen />}
                             {currentScreen === 'add' && <AddTaskScreen />}

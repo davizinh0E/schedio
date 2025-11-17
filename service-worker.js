@@ -3,8 +3,8 @@ const BASE_PATH = '/schedio/';
 const urlsToCache = [
     `${BASE_PATH}schedio.html`,
     `${BASE_PATH}manifest.json`,
-    `${BASE_PATH}icon-192.png`,
-    `${BASE_PATH}icon-512.png`,
+    `${BASE_PATH}assets/icons/icon-192.png`,
+    `${BASE_PATH}assets/icons/icon-512.png`,
     'https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap',
     'https://unpkg.com/react@18/umd/react.production.min.js',
     'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
@@ -104,8 +104,8 @@ function syncEvents() {
 self.addEventListener('push', (event) => {
     const options = {
         body: event.data ? event.data.text() : 'New notification',
-        icon: 'icon-192.png',
-        badge: 'icon-192.png',
+        icon: 'assets/icons/icon-192.png',
+        badge: 'assets/icons/icon-192.png',
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
