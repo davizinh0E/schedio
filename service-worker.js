@@ -1,7 +1,8 @@
-const CACHE_NAME = 'schedio-v1';
+const CACHE_NAME = 'schedio-v2';
 const BASE_PATH = '/schedio/';
 const urlsToCache = [
     `${BASE_PATH}schedio.html`,
+    `${BASE_PATH}schedio_3.html`,
     `${BASE_PATH}manifest.json`,
     `${BASE_PATH}assets/icons/icon-192.png`,
     `${BASE_PATH}assets/icons/icon-512.png`,
@@ -61,22 +62,93 @@ self.addEventListener('fetch', (event) => {
 
                 return fetch(fetchRequest).then((response) => {
                     // Check if valid response
-                    if (!response || response.status !== 200 || response.type !== 'basic') {
+                    if (!response || response.status !== 200) {
                         return response;
                     }
 
                     // Clone the response
                     const responseToCache = response.clone();
 
-                    caches.open(CACHE_NAME)
-                        .then((cache) => {
-                            cache.put(event.request, responseToCache);
-                        });
+                    // Cache successful responses (except for external resources)
+                    if (response.type === 'basic' || response.type === 'cors') {
+                        caches.open(CACHE_NAME)
+                            .then((cache) => {
+                                cache.put(event.request, responseToCache);
+                            });
+                    }
 
                     return response;
-                }).catch(() => {
-                    // If both cache and network fail, show offline page
-                    return new Response('Offline - Unable to fetch resource', {
+                }).catch((error) => {
+                    console.log('Fetch failed:', error);
+                    
+                    // If both cache and network fail, try to return cached HTML as fallback
+                    if (event.request.destination === 'document') {
+                        return caches.match(`${BASE_PATH}schedio_3.html`)
+                            .then(cachedResponse => {
+                                if (cachedResponse) {
+                                    return cachedResponse;
+                                }
+                                return new Response(
+                                    `<!DOCTYPE html>
+                                    <html lang="pt-BR">
+                                    <head>
+                                        <meta charset="UTF-8">
+                                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                        <title>Schedio - Offline</title>
+                                        <style>
+                                            body {
+                                                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                min-height: 100vh;
+                                                margin: 0;
+                                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                                color: white;
+                                                text-align: center;
+                                                padding: 20px;
+                                            }
+                                            .offline-container {
+                                                max-width: 400px;
+                                            }
+                                            h1 { font-size: 3rem; margin: 0; }
+                                            p { font-size: 1.2rem; margin: 20px 0; opacity: 0.9; }
+                                            button {
+                                                background: white;
+                                                color: #667eea;
+                                                border: none;
+                                                padding: 12px 30px;
+                                                font-size: 1rem;
+                                                font-weight: 600;
+                                                border-radius: 25px;
+                                                cursor: pointer;
+                                                margin-top: 20px;
+                                            }
+                                            button:hover { transform: scale(1.05); }
+                                        </style>
+                                    </head>
+                                    <body>
+                                        <div class="offline-container">
+                                            <h1>📴</h1>
+                                            <h2>You're Offline</h2>
+                                            <p>Please check your internet connection and try again.</p>
+                                            <button onclick="window.location.reload()">Try Again</button>
+                                        </div>
+                                    </body>
+                                    </html>`,
+                                    {
+                                        status: 200,
+                                        statusText: 'OK',
+                                        headers: new Headers({
+                                            'Content-Type': 'text/html'
+                                        })
+                                    }
+                                );
+                            });
+                    }
+                    
+                    // For other resources, return a simple error
+                    return new Response('Resource unavailable offline', {
                         status: 503,
                         statusText: 'Service Unavailable',
                         headers: new Headers({
@@ -122,7 +194,14 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     event.waitUntil(
-        clients.openWindow(`${BASE_PATH}schedio.html`)
+        clients.openWindow(`${BASE_PATH}schedio_3.html`)
     );
+});
+
+// Add message handler for manual cache refresh
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });
 
