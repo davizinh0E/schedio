@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<!-- Schedio Calendar App v2.1.0 - PWA with Portuguese Translation -->
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1b2e3c">
+    <meta name="description" content="A modern calendar app to manage your tasks and events">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Schedio">
+    <title>Schedio - Modern Calendar</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: white;
+        }
+
+        .bg-light {
+            background-color: #eae8dc;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .glass-effect {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .event-card {
+            transition: all 0.2s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Semantic Container Classes */
+        .app-main-container {
+            max-width: 500px;
+        }
+
+        .screen-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .screen-header {
+            padding: 1.5rem;
+            padding-bottom: 1rem;
+        }
+
+        .screen-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            padding-top: 0;
+        }
+
+        .date-display-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .task-list-section {
+            margin-bottom: 1rem;
+        }
+
+        .calendar-grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .navigation-bar {
+            padding: 1rem 1.5rem;
+        }
+
+        .form-container {
+            padding: 1.5rem;
+            padding-top: 0;
+            overflow-y: auto;
+        }
+
+        .stats-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-section {
+            border-radius: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Icon Components
+        const Icon = ({ children, size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                {children}
+            </svg>
+        );
+
+        const Calendar = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </Icon>
+        );
+
+        const Plus = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </Icon>
+        );
+
+        const Bell = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </Icon>
+        );
+
+        const CheckCircle = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </Icon>
+        );
+
+        const Circle = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <circle cx="12" cy="12" r="10"></circle>
+            </Icon>
+        );
+
+        const Home = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </Icon>
+        );
+
+        const BarChart3 = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <line x1="12" y1="20" x2="12" y2="10"></line>
+                <line x1="18" y1="20" x2="18" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="16"></line>
+            </Icon>
+        );
+
+        const Settings = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </Icon>
+        );
+
+        const ChevronLeft = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </Icon>
+        );
+
+        const ChevronRight = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </Icon>
+        );
+
+        const Lock = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </Icon>
+        );
+
+        const User = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </Icon>
+        );
+
+        const SchedioPrototypes = () => {
+            const [isLoggedIn, setIsLoggedIn] = useState(false);
+            const [currentScreen, setCurrentScreen] = useState('home');
+            const [viewMode, setViewMode] = useState('today'); // 'today' or 'calendar'
+            const [currentMonth, setCurrentMonth] = useState('DEC');
+            const [selectedMonth, setSelectedMonth] = useState(null); // null = year view, number = month detail view
+            const [selectedDate, setSelectedDate] = useState(null);
+            const [darkMode, setDarkMode] = useState(() => {
+                const saved = localStorage.getItem('darkMode');
+                return saved ? JSON.parse(saved) : false;
+            });
+            const [language, setLanguage] = useState(() => {
+                const saved = localStorage.getItem('language');
+                return saved || 'en'; // 'en' or 'pt'
+            });
+            const [autoDeletion, setAutoDeletion] = useState(() => {
+                const saved = localStorage.getItem('autoDeletion');
+                return saved || 'off'; // 'off', '30', '60', '120'
+            });
+            const [events, setEvents] = useState({
+                '2025-12-13': [{ title: 'Team Meeting', time: '3:00 PM', color: 'bg-gradient-to-br from-amber-200 to-amber-300' }],
+                '2025-12-14': [
+                    { title: 'Proj Update', time: '9:00 AM', color: 'bg-gradient-to-br from-rose-200 to-rose-300' },
+                    { title: 'Meeting', time: '10:00 AM', color: 'bg-gradient-to-br from-rose-200 to-rose-300' }
+                ],
+                '2025-12-15': [{ title: 'Web Update', time: '2:00 PM', color: 'bg-gradient-to-br from-teal-200 to-teal-300' }]
+            });
+
+            // Save dark mode preference
+            React.useEffect(() => {
+                localStorage.setItem('darkMode', JSON.stringify(darkMode));
+            }, [darkMode]);
+
+            // Save language preference
+            React.useEffect(() => {
+                localStorage.setItem('language', language);
+            }, [language]);
+
+            // Save auto deletion preference
+            React.useEffect(() => {
+                localStorage.setItem('autoDeletion', autoDeletion);
+            }, [autoDeletion]);
+
+            const toggleDarkMode = () => {
+                setDarkMode(!darkMode);
+            };
+
+            const toggleLanguage = () => {
+                setLanguage(language === 'en' ? 'pt' : 'en');
+            };
+
+            const getAutoDeletionText = () => {
+                if (language === 'pt') {
+                    switch (autoDeletion) {
+                        case '30': return '30 dias';
+                        case '60': return '60 dias';
+                        case '120': return '120 dias';
+                        default: return 'Desativado';
+                    }
+                }
+                switch (autoDeletion) {
+                    case '30': return '30 days';
+                    case '60': return '60 days';
+                    case '120': return '120 days';
+                    default: return 'Off';
+                }
+            };
+
+            // Translations
+            const t = {
+                // Navigation
+                home: language === 'pt' ? 'Início' : 'Home',
+                calendar: language === 'pt' ? 'Calendário' : 'Calendar',
+                stats: language === 'pt' ? 'Estatísticas' : 'Stats',
+                settings: language === 'pt' ? 'Configurações' : 'Settings',
+
+                // Home Screen
+                today: language === 'pt' ? 'Hoje' : 'Today',
+                todaysTasks: language === 'pt' ? 'Tarefas de hoje' : 'Todays tasks',
+                reminders: language === 'pt' ? 'Lembretes' : 'Reminders',
+                start: language === 'pt' ? 'Início' : 'Start',
+                end: language === 'pt' ? 'Fim' : 'End',
+
+                // Days of week
+                sunday: language === 'pt' ? 'Domingo' : 'Sunday',
+                monday: language === 'pt' ? 'Segunda' : 'Monday',
+                tuesday: language === 'pt' ? 'Terça' : 'Tuesday',
+                wednesday: language === 'pt' ? 'Quarta' : 'Wednesday',
+                thursday: language === 'pt' ? 'Quinta' : 'Thursday',
+                friday: language === 'pt' ? 'Sexta' : 'Friday',
+                saturday: language === 'pt' ? 'Sábado' : 'Saturday',
+
+                // Short days
+                sun: language === 'pt' ? 'Dom' : 'Sun',
+                mon: language === 'pt' ? 'Seg' : 'Mon',
+                tue: language === 'pt' ? 'Ter' : 'Tue',
+                wed: language === 'pt' ? 'Qua' : 'Wed',
+                thu: language === 'pt' ? 'Qui' : 'Thu',
+                fri: language === 'pt' ? 'Sex' : 'Fri',
+                sat: language === 'pt' ? 'Sáb' : 'Sat',
+
+                // Months
+                january: language === 'pt' ? 'Janeiro' : 'January',
+                february: language === 'pt' ? 'Fevereiro' : 'February',
+                march: language === 'pt' ? 'Março' : 'March',
+                april: language === 'pt' ? 'Abril' : 'April',
+                may: language === 'pt' ? 'Maio' : 'May',
+                june: language === 'pt' ? 'Junho' : 'June',
+                july: language === 'pt' ? 'Julho' : 'July',
+                august: language === 'pt' ? 'Agosto' : 'August',
+                september: language === 'pt' ? 'Setembro' : 'September',
+                october: language === 'pt' ? 'Outubro' : 'October',
+                november: language === 'pt' ? 'Novembro' : 'November',
+                december: language === 'pt' ? 'Dezembro' : 'December',
+
+                // Short months
+                jan: language === 'pt' ? 'JAN' : 'JAN',
+                feb: language === 'pt' ? 'FEV' : 'FEB',
+                mar: language === 'pt' ? 'MAR' : 'MAR',
+                apr: language === 'pt' ? 'ABR' : 'APR',
+                mai: language === 'pt' ? 'MAI' : 'MAY',
+                jun: language === 'pt' ? 'JUN' : 'JUN',
+                jul: language === 'pt' ? 'JUL' : 'JUL',
+                aug: language === 'pt' ? 'AGO' : 'AUG',
+                sep: language === 'pt' ? 'SET' : 'SEP',
+                oct: language === 'pt' ? 'OUT' : 'OCT',
+                nov: language === 'pt' ? 'NOV' : 'NOV',
+                dec: language === 'pt' ? 'DEZ' : 'DEC',
+
+                // Add Event
+                newEvent: language === 'pt' ? 'Novo Evento' : 'New Event',
+                eventTitle: language === 'pt' ? 'Título do Evento' : 'Event Title',
+                date: language === 'pt' ? 'Data' : 'Date',
+                time: language === 'pt' ? 'Hora' : 'Time',
+                category: language === 'pt' ? 'Categoria' : 'Category',
+                colorTheme: language === 'pt' ? 'Tema de Cor' : 'Color Theme',
+                description: language === 'pt' ? 'Descrição' : 'Description',
+                reminder: language === 'pt' ? 'Lembrete' : 'Reminder',
+                createEvent: language === 'pt' ? 'Criar Evento' : 'Create Event',
+                addDetails: language === 'pt' ? 'Adicione detalhes sobre este evento...' : 'Add details about this event...',
+                invitePeople: language === 'pt' ? 'Convidar Pessoas' : 'Invite People',
+                selectFriends: language === 'pt' ? 'Selecione amigos' : 'Select friends',
+                selected: language === 'pt' ? 'selecionado(s)' : 'selected',
+
+                // Calendar
+                eventsThisMonth: language === 'pt' ? 'Eventos este mês' : 'Events this month',
+                noEventsThisMonth: language === 'pt' ? 'Sem eventos este mês' : 'No events this month',
+                event: language === 'pt' ? 'evento' : 'event',
+                events: language === 'pt' ? 'eventos' : 'events',
+
+                // Stats
+                statistics: language === 'pt' ? 'Estatísticas' : 'Statistics',
+                yourWeeklyProgress: language === 'pt' ? 'Seu progresso semanal' : 'Your weekly progress',
+                currentStreak: language === 'pt' ? 'Sequência Atual' : 'Current Streak',
+                completion: language === 'pt' ? 'Conclusão' : 'Completion',
+                days: language === 'pt' ? 'dias' : 'days',
+                thisWeek: language === 'pt' ? 'esta semana' : 'this week',
+                weeklyActivity: language === 'pt' ? 'Atividade Semanal' : 'Weekly Activity',
+                tasksByCategory: language === 'pt' ? 'Tarefas por Categoria' : 'Tasks by Category',
+
+                // Settings
+                profile: language === 'pt' ? 'Perfil' : 'Profile',
+                accountInfo: language === 'pt' ? 'Informações da conta' : 'Account information',
+                preferences: language === 'pt' ? 'Preferências' : 'Preferences',
+                notifications: language === 'pt' ? 'Notificações' : 'Notifications',
+                receiveReminders: language === 'pt' ? 'Receber lembretes' : 'Receive reminders',
+                darkMode: language === 'pt' ? 'Modo Escuro' : 'Dark Mode',
+                interfaceTheme: language === 'pt' ? 'Tema da interface' : 'Interface theme',
+                soundEffects: language === 'pt' ? 'Efeitos Sonoros' : 'Sound Effects',
+                audioFeedback: language === 'pt' ? 'Feedback de áudio' : 'Audio feedback',
+                language: language === 'pt' ? 'Idioma' : 'Language',
+                about: language === 'pt' ? 'Sobre' : 'About',
+                version: language === 'pt' ? 'Versão' : 'Version',
+                privacyPolicy: language === 'pt' ? 'Política de Privacidade' : 'Privacy Policy',
+                termsOfService: language === 'pt' ? 'Termos de Serviço' : 'Terms of Service',
+                signOut: language === 'pt' ? 'Sair' : 'Sign Out',
+                customizeExperience: language === 'pt' ? 'Personalize sua experiência' : 'Customize your experience',
+
+                // Login
+                welcomeBack: language === 'pt' ? 'Bem-vindo de volta! Por favor, faça login na sua conta.' : 'Welcome back! Please login to your account.',
+                username: language === 'pt' ? 'Nome de usuário' : 'Username',
+                password: language === 'pt' ? 'Senha' : 'Password',
+                enterUsername: language === 'pt' ? 'Digite seu nome de usuário' : 'Enter your username',
+                enterPassword: language === 'pt' ? 'Digite sua senha' : 'Enter your password',
+                rememberMe: language === 'pt' ? 'Lembrar de mim' : 'Remember me',
+                forgotPassword: language === 'pt' ? 'Esqueceu a senha?' : 'Forgot Password?',
+                login: language === 'pt' ? 'Entrar' : 'Login',
+                or: language === 'pt' ? 'OU' : 'OR',
+                dontHaveAccount: language === 'pt' ? 'Não tem uma conta?' : "Don't have an account?",
+                signUp: language === 'pt' ? 'Cadastre-se' : 'Sign up',
+            };
+
+            const categories = [
+                { name: 'Saúde', color: 'bg-emerald-400', bgCard: 'bg-emerald-50', border: 'border-emerald-200' },
+                { name: 'Estudos', color: 'bg-blue-400', bgCard: 'bg-blue-50', border: 'border-blue-200' },
+                { name: 'Trabalho', color: 'bg-purple-400', bgCard: 'bg-purple-50', border: 'border-purple-200' },
+                { name: 'Pessoal', color: 'bg-amber-400', bgCard: 'bg-amber-50', border: 'border-amber-200' }
+            ];
+
+            // Mock friends data
+            const mockFriends = [
+                { id: 1, name: 'Ana Silva', avatar: '👩', color: 'bg-pink-100' },
+                { id: 2, name: 'João Santos', avatar: '👨', color: 'bg-blue-100' },
+                { id: 3, name: 'Maria Costa', avatar: '👩‍🦰', color: 'bg-purple-100' },
+                { id: 4, name: 'Pedro Lima', avatar: '👨‍💼', color: 'bg-green-100' },
+                { id: 5, name: 'Sofia Alves', avatar: '👱‍♀️', color: 'bg-yellow-100' },
+                { id: 6, name: 'Lucas Rocha', avatar: '👨‍🎓', color: 'bg-indigo-100' },
+                { id: 7, name: 'Beatriz Ferreira', avatar: '👩‍💻', color: 'bg-rose-100' },
+                { id: 8, name: 'Rafael Martins', avatar: '👨‍🔧', color: 'bg-cyan-100' }
+            ];
+
+            const meetings = [
+                {
+                    title: 'Team Meeting',
+                    startTime: '3:00 PM',
+                    endTime: '3:30 PM',
+                    duration: '30 Min',
+                    category: 'Trabalho',
+                    avatars: ['👤', '👤'],
+                    color: 'bg-gradient-to-br from-amber-200 to-amber-300'
+                },
+                {
+                    title: 'Review Session',
+                    startTime: '4:20 PM',
+                    endTime: '4:45 PM',
+                    duration: '25 Min',
+                    category: 'Estudos',
+                    avatars: ['👤', '👤', '👤'],
+                    color: 'bg-gradient-to-br from-slate-300 to-slate-400'
+                },
+                {
+                    title: 'Gym Workout',
+                    startTime: '6:00 PM',
+                    endTime: '7:00 PM',
+                    duration: '60 Min',
+                    category: 'Saúde',
+                    avatars: ['👤'],
+                    color: 'bg-gradient-to-br from-rose-200 to-rose-300'
+                }
+            ];
+
+            const weekSchedule = [
+                {
+                    day: 'Tuesday',
+                    date: '13',
+                    month: 'DEC',
+                    color: 'from-purple-200 to-purple-300',
+                    events: [
+                        { time: '3 pm', title: 'Meeting', duration: '1h' }
+                    ]
+                },
+                {
+                    day: 'Wednesday',
+                    date: '14',
+                    month: 'DEC',
+                    color: 'from-rose-200 to-rose-300',
+                    events: [
+                        { time: '9 am', title: 'Proj Update', duration: '30m' },
+                        { time: '10 am', title: 'Meeting', duration: '1h' }
+                    ]
+                },
+                {
+                    day: 'Thursday',
+                    date: '15',
+                    month: 'DEC',
+                    color: 'from-teal-200 to-teal-300',
+                    events: [
+                        { time: '2 pm', title: 'Web Update', duration: '1h' }
+                    ]
+                }
+            ];
+
+            const getCategoryColor = (category) => {
+                const cat = categories.find(c => c.name === category);
+                return cat ? cat.color : 'bg-gray-500';
+            };
+
+            const HomeScreen = () => (
+                <div className={`screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                    {/* Header with view toggle */}
+                    <div className="screen-header">
+                        <div className="view-toggle-section flex items-center justify-between mb-6">
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setViewMode('today')}
+                                    className={`px-5 py-2 rounded-full text-sm font-semibold transition ${viewMode === 'today'
+                                        ? (darkMode ? 'bg-white text-black' : 'bg-black text-white')
+                                        : (darkMode ? 'bg-gray-800 text-gray-300 border border-gray-700' : 'bg-white text-gray-700 border border-gray-200')
+                                        }`}
+                                >
+                                    {t.today}
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('calendar')}
+                                    className={`px-5 py-2 rounded-full text-sm font-semibold transition ${viewMode === 'calendar'
+                                        ? (darkMode ? 'bg-white text-black' : 'bg-black text-white')
+                                        : (darkMode ? 'bg-gray-800 text-gray-300 border border-gray-700' : 'bg-white text-gray-700 border border-gray-200')
+                                        }`}
+                                >
+                                    {t.calendar}
+                                </button>
+                            </div>
+                            <button className={`w-10 h-10 rounded-full flex items-center justify-center ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-900'}`}>
+                                <Plus size={20} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {viewMode === 'today' ? (
+                        <div className="today-view-content screen-content animate-fade-in">
+                            {/* Large Date Display */}
+                            <div className="date-display-section">
+                                <div className={`day-label text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.tuesday}</div>
+                                <div className="date-time-container flex items-start gap-6">
+                                    <div className="main-date-display">
+                                        <div className={`date-number text-7xl font-bold leading-none mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>13.12</div>
+                                        <div className={`month-label text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>DEC</div>
+                                    </div>
+                                    <div className="timezone-clocks flex flex-col gap-3 mt-2">
+                                        <div className="text-right">
+                                            <div className={`text-2xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>1:20 PM</div>
+                                            <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>New York</div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className={`text-2xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>6:20 PM</div>
+                                            <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>United Kingdom</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Tasks Section */}
+                            <div className="task-list-section">
+                                <div className="task-header flex items-center justify-between mb-3">
+                                    <h3 className={`section-title text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.todaysTasks}</h3>
+                                    <button className={`reminders-button text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.reminders}</button>
+                                </div>
+
+                                <div className="task-cards-list space-y-3">
+                                    {meetings.map((meeting, idx) => (
+                                        <div key={idx} className={`task-card ${meeting.color} rounded-3xl p-4 event-card shadow-sm`}>
+                                            <div className="task-card-header flex items-start justify-between mb-3">
+                                                <div className="task-info flex-1">
+                                                    <h4 className="task-title text-lg font-bold text-gray-800 mb-1">{meeting.title}</h4>
+                                                </div>
+                                                <div className="avatar-group flex -space-x-2">
+                                                    {meeting.avatars.map((avatar, i) => (
+                                                        <div key={i} className="w-8 h-8 rounded-full bg-white border-2 border-white flex items-center justify-center text-sm">
+                                                            {avatar}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="task-card-footer flex items-center justify-between">
+                                                <div className="task-timing flex items-center gap-3">
+                                                    <div className="start-time-group">
+                                                        <div className="time-label text-xs text-gray-600 mb-0.5">{t.start}</div>
+                                                        <div className="time-value text-sm font-bold text-gray-900">{meeting.startTime}</div>
+                                                    </div>
+                                                    <div className="duration-badge px-3 py-1 bg-gray-900 text-white rounded-full text-xs font-semibold">
+                                                        {meeting.duration}
+                                                    </div>
+                                                    <div className="end-time-group">
+                                                        <div className="time-label text-xs text-gray-600 mb-0.5">{t.end}</div>
+                                                        <div className="time-value text-sm font-bold text-gray-900">{meeting.endTime}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="calendar-view-content screen-content animate-fade-in">
+                            {/* Calendar Month Navigation */}
+                            <div className="month-navigation flex items-center justify-between mb-6">
+                                <button className="text-gray-400"><ChevronLeft size={24} /></button>
+                                <div className="flex items-center gap-4 text-sm font-semibold text-gray-400">
+                                    <span>NOV</span>
+                                    <span className="text-2xl text-gray-900">{currentMonth}</span>
+                                    <span>JAN</span>
+                                </div>
+                                <button className="text-gray-400"><ChevronRight size={24} /></button>
+                            </div>
+
+                            {/* Week Schedule Cards */}
+                            <div className="week-schedule-cards space-y-3 pb-6">
+                                {weekSchedule.map((day, idx) => (
+                                    <div key={idx} className={`day-schedule-card bg-gradient-to-br ${day.color} rounded-3xl p-5 event-card shadow-sm`}>
+                                        <div className="day-card-header flex items-start justify-between mb-4">
+                                            <div className="date-info">
+                                                <div className="weekday-name text-sm text-gray-700 mb-1">{day.day}</div>
+                                                <div className="date-display flex items-end gap-2">
+                                                    <div className="day-number text-5xl font-bold text-gray-900">{day.date}</div>
+                                                    <div className="month-name text-2xl font-bold text-gray-900 mb-1">{day.month}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="hourly-slots flex items-center gap-3">
+                                            {['9 am', '10 am', '11 am', '3 pm', '4 pm', '5 pm'].map((time, i) => (
+                                                <div key={i} className="flex-1">
+                                                    <div className="text-xs text-gray-600 mb-2">{time}</div>
+                                                    {day.events.some(e => e.time === time) ? (
+                                                        <div className="bg-gray-900 text-white rounded-xl p-2 text-xs font-semibold text-center">
+                                                            {day.events.find(e => e.time === time).title}
+                                                        </div>
+                                                    ) : (
+                                                        <button className="w-full h-8 rounded-xl border-2 border-dashed border-gray-400 flex items-center justify-center hover:bg-white/30 transition">
+                                                            <Plus size={16} className="text-gray-600" />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+
+            const CalendarScreen = () => {
+                const months = [
+                    { name: t.january, shortName: language === 'pt' ? 'JAN' : 'JAN', number: 0, color: 'from-green-400 to-green-500', daysInMonth: 31, startDay: 1 },
+                    { name: t.february, shortName: language === 'pt' ? 'FEV' : 'FEB', number: 1, color: 'from-purple-400 to-purple-500', daysInMonth: 29, startDay: 4 },
+                    { name: t.march, shortName: language === 'pt' ? 'MAR' : 'MAR', number: 2, color: 'from-red-400 to-red-500', daysInMonth: 31, startDay: 5 },
+                    { name: t.april, shortName: language === 'pt' ? 'ABR' : 'APR', number: 3, color: 'from-orange-400 to-orange-500', daysInMonth: 30, startDay: 1 },
+                    { name: t.may, shortName: language === 'pt' ? 'MAI' : 'MAY', number: 4, color: 'from-teal-500 to-teal-600', daysInMonth: 31, startDay: 3 },
+                    { name: t.june, shortName: language === 'pt' ? 'JUN' : 'JUN', number: 5, color: 'from-cyan-400 to-cyan-500', daysInMonth: 30, startDay: 6 },
+                    { name: t.july, shortName: language === 'pt' ? 'JUL' : 'JUL', number: 6, color: 'from-blue-600 to-blue-700', daysInMonth: 31, startDay: 1 },
+                    { name: t.august, shortName: language === 'pt' ? 'AGO' : 'AUG', number: 7, color: 'from-yellow-400 to-yellow-500', daysInMonth: 31, startDay: 4 },
+                    { name: t.september, shortName: language === 'pt' ? 'SET' : 'SEP', number: 8, color: 'from-pink-400 to-pink-500', daysInMonth: 30, startDay: 0 },
+                    { name: t.october, shortName: language === 'pt' ? 'OUT' : 'OCT', number: 9, color: 'from-indigo-400 to-indigo-500', daysInMonth: 31, startDay: 2 },
+                    { name: t.november, shortName: language === 'pt' ? 'NOV' : 'NOV', number: 10, color: 'from-amber-500 to-amber-600', daysInMonth: 30, startDay: 5 },
+                    { name: t.december, shortName: language === 'pt' ? 'DEZ' : 'DEC', number: 11, color: 'from-emerald-400 to-emerald-500', daysInMonth: 31, startDay: 0 }
+                ];
+
+                const generateCalendar = (monthData) => {
+                    const days = [];
+                    for (let i = 0; i < monthData.startDay; i++) {
+                        days.push(null);
+                    }
+                    for (let i = 1; i <= monthData.daysInMonth; i++) {
+                        days.push(i);
+                    }
+                    return days;
+                };
+
+                const currentMonthIndex = new Date().getMonth();
+
+                const handleDayClick = (monthNumber, day) => {
+                    const dateStr = `2025-${String(monthNumber + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    setSelectedDate(dateStr);
+                    setCurrentScreen('add');
+                };
+
+                // Month detail view
+                if (selectedMonth !== null) {
+                    const monthData = months[selectedMonth];
+                    const calendarDays = generateCalendar(monthData);
+
+                    return (
+                        <div className={`month-detail-view screen-container animate-fade-in ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                            <div className="screen-header">
+                                <div className="calendar-navigation flex items-center justify-between mb-4">
+                                    <button
+                                        onClick={() => setSelectedMonth(null)}
+                                        className={`w-10 h-10 rounded-full flex items-center justify-center shadow-sm ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
+                                    >
+                                        <ChevronLeft size={20} />
+                                    </button>
+                                    <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                        {monthData.name} 2025
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            setSelectedDate(null);
+                                            setCurrentScreen('add');
+                                        }}
+                                        className={`w-10 h-10 rounded-full flex items-center justify-center shadow-sm ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'}`}
+                                    >
+                                        <Plus size={20} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="month-calendar-content screen-content">
+                                <div className={`calendar-month-grid bg-gradient-to-br ${monthData.color} rounded-3xl p-6 shadow-lg`}>
+                                    <div className="weekday-headers grid grid-cols-7 gap-3 mb-3">
+                                        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                                            <div key={i} className="weekday-header text-center text-sm font-bold text-white/80">
+                                                {day}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="calendar-days-grid grid grid-cols-7 gap-3">
+                                        {calendarDays.map((date, i) => {
+                                            const dateStr = date ? `2025-${String(monthData.number + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}` : null;
+                                            const hasEvents = dateStr && events[dateStr];
+                                            const today = new Date();
+                                            const isToday = date === today.getDate() && monthData.number === today.getMonth();
+
+                                            return (
+                                                <div key={i} className="aspect-square">
+                                                    {date ? (
+                                                        <button
+                                                            onClick={() => handleDayClick(monthData.number, date)}
+                                                            className={`w-full h-full rounded-2xl flex flex-col items-center justify-center text-base font-bold transition ${isToday
+                                                                ? 'bg-white text-gray-900 shadow-lg'
+                                                                : 'bg-white/20 text-white hover:bg-white/40'
+                                                                }`}
+                                                        >
+                                                            {date}
+                                                            {hasEvents && (
+                                                                <div className="flex gap-0.5 mt-1">
+                                                                    {events[dateStr].slice(0, 3).map((_, idx) => (
+                                                                        <div key={idx} className={`w-1 h-1 rounded-full ${isToday ? 'bg-gray-900' : 'bg-white'}`}></div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </button>
+                                                    ) : <div></div>}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Events for selected month */}
+                                <div className="month-events-section mt-6">
+                                    <h3 className={`section-title text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.eventsThisMonth}</h3>
+                                    <div className="event-list space-y-3">
+                                        {Object.keys(events)
+                                            .filter(dateStr => dateStr.startsWith(`2025-${String(monthData.number + 1).padStart(2, '0')}`))
+                                            .sort()
+                                            .map(dateStr => {
+                                                const day = parseInt(dateStr.split('-')[2]);
+                                                return events[dateStr].map((event, idx) => (
+                                                    <div key={`${dateStr}-${idx}`} className={`${event.color} rounded-2xl p-4 shadow-sm`}>
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex-1">
+                                                                <div className="text-sm font-semibold text-gray-600 mb-1">
+                                                                    {monthData.name} {day}
+                                                                </div>
+                                                                <div className="font-bold text-gray-900">{event.title}</div>
+                                                                <div className="text-sm text-gray-700 mt-1">{event.time}</div>
+                                                            </div>
+                                                            {event.avatars && event.avatars.length > 0 && (
+                                                                <div className="flex -space-x-2">
+                                                                    {event.avatars.map((avatar, i) => (
+                                                                        <div key={i} className="w-8 h-8 rounded-full bg-white border-2 border-white flex items-center justify-center text-sm">
+                                                                            {avatar}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ));
+                                            })}
+                                        {Object.keys(events).filter(dateStr =>
+                                            dateStr.startsWith(`2025-${String(monthData.number + 1).padStart(2, '0')}`)
+                                        ).length === 0 && (
+                                                <div className={`text-center py-8 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                                    {t.noEventsThisMonth}
+                                                </div>
+                                            )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                }
+
+                // Year overview
+                return (
+                    <div className={`year-overview screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                        <div className="screen-header">
+                            <div className="year-header flex items-center justify-between mb-4">
+                                <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    2025
+                                </div>
+                                <button
+                                    onClick={() => setCurrentScreen('add')}
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center shadow-sm ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'}`}
+                                >
+                                    <Plus size={20} />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="year-months-content screen-content">
+                            <div className="calendar-grid-container">
+                                {months.map((month) => {
+                                    const isCurrent = month.number === currentMonthIndex;
+                                    const monthEvents = Object.keys(events).filter(dateStr =>
+                                        dateStr.startsWith(`2025-${String(month.number + 1).padStart(2, '0')}`)
+                                    ).length;
+
+                                    return (
+                                        <button
+                                            key={month.number}
+                                            onClick={() => setSelectedMonth(month.number)}
+                                            className={`month-card bg-gradient-to-br ${month.color} rounded-3xl p-4 shadow-md event-card ${isCurrent ? 'ring-4 ring-gray-900' : ''}`}
+                                        >
+                                            <div className="month-card-header text-center mb-3">
+                                                <h3 className="month-name text-white font-bold text-lg mb-0.5">{month.name.toUpperCase()}</h3>
+                                                {monthEvents > 0 && (
+                                                    <div className="event-count text-white/80 text-xs font-semibold">{monthEvents} {monthEvents !== 1 ? t.events : t.event}</div>
+                                                )}
+                                            </div>
+
+                                            <div className="mini-calendar bg-white/20 backdrop-blur-sm rounded-2xl p-3">
+                                                <div className="mini-weekday-headers grid grid-cols-7 gap-1 mb-2">
+                                                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                                                        <div key={i} className="mini-weekday-header text-center text-[8px] font-bold text-white/70">
+                                                            {day}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="mini-calendar-days grid grid-cols-7 gap-1">
+                                                    {generateCalendar(month).map((date, i) => {
+                                                        const dateStr = date ? `2025-${String(month.number + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}` : null;
+                                                        const hasEvents = dateStr && events[dateStr];
+                                                        const today = new Date();
+                                                        const isToday = date === today.getDate() && month.number === today.getMonth();
+
+                                                        return (
+                                                            <div key={i} className="aspect-square flex items-center justify-center">
+                                                                {date && (
+                                                                    <div className={`text-[10px] font-semibold relative ${isToday
+                                                                        ? 'bg-white text-gray-900 rounded-full w-5 h-5 flex items-center justify-center'
+                                                                        : 'text-white'
+                                                                        }`}>
+                                                                        {date}
+                                                                        {hasEvents && !isToday && (
+                                                                            <div className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full"></div>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const AddTaskScreen = () => {
+                const [eventTitle, setEventTitle] = useState('');
+                const [eventTime, setEventTime] = useState('');
+                const [selectedColor, setSelectedColor] = useState(0);
+                const [selectedCategory, setSelectedCategory] = useState(0);
+                const [eventDescription, setEventDescription] = useState('');
+                const [selectedFriends, setSelectedFriends] = useState([]);
+                const [showFriendsModal, setShowFriendsModal] = useState(false);
+
+                const colorThemes = [
+                    'bg-gradient-to-br from-amber-200 to-amber-300',
+                    'bg-gradient-to-br from-slate-300 to-slate-400',
+                    'bg-gradient-to-br from-rose-200 to-rose-300',
+                    'bg-gradient-to-br from-purple-200 to-purple-300',
+                    'bg-gradient-to-br from-teal-200 to-teal-300'
+                ];
+
+                const toggleFriendSelection = (friendId) => {
+                    setSelectedFriends(prev =>
+                        prev.includes(friendId)
+                            ? prev.filter(id => id !== friendId)
+                            : [...prev, friendId]
+                    );
+                };
+
+                const handleCreateEvent = () => {
+                    if (!eventTitle || !eventTime) {
+                        alert('Please fill in event title and time');
+                        return;
+                    }
+
+                    const dateToUse = selectedDate || new Date().toISOString().split('T')[0];
+                    const friendAvatars = selectedFriends.map(id =>
+                        mockFriends.find(f => f.id === id)?.avatar || '👤'
+                    );
+
+                    const newEvent = {
+                        title: eventTitle,
+                        time: eventTime,
+                        color: colorThemes[selectedColor],
+                        category: categories[selectedCategory].name,
+                        avatars: friendAvatars.length > 0 ? friendAvatars : undefined
+                    };
+
+                    setEvents(prev => ({
+                        ...prev,
+                        [dateToUse]: [...(prev[dateToUse] || []), newEvent]
+                    }));
+
+                    // Reset form
+                    setEventTitle('');
+                    setEventTime('');
+                    setEventDescription('');
+                    setSelectedColor(0);
+                    setSelectedCategory(0);
+                    setSelectedFriends([]);
+                    setSelectedDate(null);
+                    setCurrentScreen('calendar');
+                };
+
+                return (
+                    <div className={`add-task-screen screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                        <div className="screen-header">
+                            <div className="header-navigation flex items-center gap-3 mb-6">
+                                <button
+                                    onClick={() => {
+                                        setSelectedDate(null);
+                                        setCurrentScreen(currentScreen === 'add' ? 'home' : 'calendar');
+                                    }}
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center shadow-sm ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
+                                >
+                                    <ChevronLeft size={20} />
+                                </button>
+                                <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.newEvent}</h1>
+                            </div>
+                            {selectedDate && (
+                                <div className={`selected-date-badge rounded-2xl p-3 text-sm font-semibold ${darkMode ? 'bg-blue-900/30 border border-blue-700 text-blue-300' : 'bg-blue-50 border border-blue-200 text-blue-900'}`}>
+                                    📅 {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="form-container">
+                            <div className="event-form space-y-4">
+                                <div className="form-field-group">
+                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.eventTitle}</label>
+                                    <input
+                                        type="text"
+                                        placeholder={language === 'pt' ? 'Reunião da Equipe' : 'Team Meeting'}
+                                        value={eventTitle}
+                                        onChange={(e) => setEventTitle(e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 ${darkMode
+                                            ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-white focus:ring-gray-700'
+                                            : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900 focus:ring-gray-200'
+                                            }`}
+                                    />
+                                </div>
+
+                                <div className="date-time-fields grid grid-cols-2 gap-3">
+                                    <div className="form-field-group">
+                                        <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.date}</label>
+                                        <input
+                                            type="date"
+                                            value={selectedDate || ''}
+                                            onChange={(e) => setSelectedDate(e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-2xl focus:outline-none ${darkMode
+                                                ? 'bg-gray-800 border-gray-700 text-white focus:border-white'
+                                                : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900'
+                                                }`}
+                                        />
+                                    </div>
+                                    <div className="form-field-group">
+                                        <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.time}</label>
+                                        <input
+                                            type="time"
+                                            value={eventTime}
+                                            onChange={(e) => setEventTime(e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-2xl focus:outline-none ${darkMode
+                                                ? 'bg-gray-800 border-gray-700 text-white focus:border-white'
+                                                : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900'
+                                                }`}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-field-group">
+                                    <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.category}</label>
+                                    <div className="category-buttons grid grid-cols-2 gap-2">
+                                        {categories.map((cat, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setSelectedCategory(idx)}
+                                                className={`${cat.color} text-white rounded-2xl p-3 font-semibold shadow-sm hover:scale-105 transition ${selectedCategory === idx ? (darkMode ? 'ring-4 ring-white' : 'ring-4 ring-gray-900') : ''
+                                                    }`}
+                                            >
+                                                {cat.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="form-field-group">
+                                    <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.colorTheme}</label>
+                                    <div className="color-picker flex gap-2">
+                                        {colorThemes.map((color, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setSelectedColor(idx)}
+                                                className={`${color} w-12 h-12 rounded-full shadow-md hover:scale-110 transition ${selectedColor === idx ? (darkMode ? 'ring-4 ring-white' : 'ring-4 ring-gray-900') : ''}`}
+                                            ></button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="form-field-group">
+                                    <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.description}</label>
+                                    <textarea
+                                        placeholder={t.addDetails}
+                                        rows="4"
+                                        value={eventDescription}
+                                        onChange={(e) => setEventDescription(e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none resize-none ${darkMode
+                                            ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-white'
+                                            : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900'
+                                            }`}
+                                    ></textarea>
+                                </div>
+
+                                {/* Invite People Section */}
+                                <div className="form-field-group">
+                                    <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.invitePeople}</label>
+
+                                    {/* Selected Friends Display */}
+                                    <div className={`rounded-2xl p-4 border mb-3 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                {selectedFriends.length} {t.selected}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowFriendsModal(!showFriendsModal)}
+                                                className={`px-4 py-2 rounded-full text-sm font-semibold transition ${darkMode ? 'bg-white text-gray-900 hover:bg-gray-100' : 'bg-gray-900 text-white hover:bg-gray-800'}`}
+                                            >
+                                                {showFriendsModal ? '✕ ' + (language === 'pt' ? 'Fechar' : 'Close') : '+ ' + (language === 'pt' ? 'Adicionar' : 'Add')}
+                                            </button>
+                                        </div>
+
+                                        {/* Selected Friends Avatars */}
+                                        {selectedFriends.length > 0 && (
+                                            <div className="flex -space-x-2">
+                                                {selectedFriends.map(friendId => {
+                                                    const friend = mockFriends.find(f => f.id === friendId);
+                                                    return (
+                                                        <div key={friendId} className="w-10 h-10 rounded-full bg-white border-2 border-white flex items-center justify-center text-lg shadow-sm relative group">
+                                                            {friend?.avatar}
+                                                            <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                                                                {friend?.name}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Friends Selection Modal */}
+                                    {showFriendsModal && (
+                                        <div className={`rounded-2xl p-4 border max-h-64 overflow-y-auto ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {mockFriends.map(friend => (
+                                                    <button
+                                                        key={friend.id}
+                                                        type="button"
+                                                        onClick={() => toggleFriendSelection(friend.id)}
+                                                        className={`flex items-center gap-3 p-3 rounded-xl transition ${selectedFriends.includes(friend.id)
+                                                            ? (darkMode ? 'bg-white text-gray-900 ring-2 ring-white' : 'bg-gray-900 text-white ring-2 ring-gray-900')
+                                                            : (darkMode ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' : 'bg-gray-100 text-gray-900 hover:bg-gray-200')
+                                                            }`}
+                                                    >
+                                                        <div className={`w-10 h-10 rounded-full ${friend.color} flex items-center justify-center text-lg border-2 ${darkMode ? 'border-gray-600' : 'border-white'}`}>
+                                                            {friend.avatar}
+                                                        </div>
+                                                        <div className="flex-1 text-left overflow-hidden">
+                                                            <div className="text-sm font-semibold truncate">{friend.name}</div>
+                                                        </div>
+                                                        {selectedFriends.includes(friend.id) && (
+                                                            <div className="text-lg">✓</div>
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className={`reminder-toggle flex items-center justify-between rounded-2xl p-4 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                                    <div className="flex items-center gap-3">
+                                        <Bell className={darkMode ? 'text-gray-300' : 'text-gray-700'} size={20} />
+                                        <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.reminder}</span>
+                                    </div>
+                                    <label className="relative inline-block w-12 h-6">
+                                        <input type="checkbox" defaultChecked className="opacity-0 w-0 h-0 peer" />
+                                        <span className={`absolute cursor-pointer inset-0 rounded-full transition ${darkMode ? 'peer-checked:bg-white bg-gray-700' : 'bg-gray-300 peer-checked:bg-gray-900'}`}></span>
+                                        <span className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-6"></span>
+                                    </label>
+                                </div>
+
+                                <button
+                                    onClick={handleCreateEvent}
+                                    className={`w-full py-4 rounded-2xl font-bold shadow-lg transition mt-6 ${darkMode
+                                        ? 'bg-white text-gray-900 hover:bg-gray-100'
+                                        : 'bg-gray-900 text-white hover:bg-gray-800'
+                                        }`}
+                                >
+                                    {t.createEvent}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const StatsScreen = () => (
+                <div className={`stats-screen screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                    <div className="screen-header">
+                        <h1 className={`screen-title text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.statistics}</h1>
+                        <p className={`screen-subtitle text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.yourWeeklyProgress}</p>
+                    </div>
+
+                    <div className="stats-content screen-content">
+                        <div className="stats-cards-grid">
+                            <div className={`stat-card rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                                <p className={`stat-label text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.currentStreak}</p>
+                                <p className={`stat-value text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>7</p>
+                                <p className={`stat-unit text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.days}</p>
+                            </div>
+                            <div className={`stat-card rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                                <p className={`stat-label text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.completion}</p>
+                                <p className={`stat-value text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>85%</p>
+                                <p className={`stat-unit text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.thisWeek}</p>
+                            </div>
+                        </div>
+
+                        <div className={`weekly-activity-card rounded-3xl p-5 shadow-sm border mb-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                            <h3 className={`card-title font-bold mb-5 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.weeklyActivity}</h3>
+                            <div className="activity-chart flex items-end justify-between h-40 gap-3">
+                                {[t.mon, t.tue, t.wed, t.thu, t.fri, t.sat, t.sun].map((day, idx) => (
+                                    <div key={idx} className="chart-bar flex-1 flex flex-col items-center gap-3">
+                                        <div className={`bar-fill w-full rounded-t-2xl ${darkMode ? 'bg-white' : 'bg-gray-900'}`} style={{ height: `${[60, 80, 95, 70, 85, 50, 40][idx]}%` }}></div>
+                                        <span className={`bar-label text-xs font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{day}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className={`category-stats-card rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                            <h3 className={`card-title font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.tasksByCategory}</h3>
+                            <div className="category-list space-y-4">
+                                {categories.map((cat, idx) => (
+                                    <div key={idx} className="category-item">
+                                        <div className="category-header flex items-center justify-between mb-2">
+                                            <div className="category-name-wrapper flex items-center gap-2">
+                                                <div className={`category-indicator w-3 h-3 rounded-full ${cat.color}`}></div>
+                                                <span className={`category-name text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{cat.name}</span>
+                                            </div>
+                                            <span className={`category-count text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{[12, 18, 8, 15][idx]}</span>
+                                        </div>
+                                        <div className={`progress-bar-track w-full rounded-full h-2.5 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                                            <div className={`progress-bar-fill ${cat.color} rounded-full h-2.5`} style={{ width: `${[60, 90, 40, 75][idx]}%` }}></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const ConfigScreen = () => (
+                <div className={`config-screen screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                    <div className="screen-header">
+                        <h1 className={`screen-title text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.settings}</h1>
+                        <p className={`screen-subtitle text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.customizeExperience}</p>
+                    </div>
+
+                    <div className="settings-content screen-content">
+                        <div className={`profile-section settings-section ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`section-header p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`section-title font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.profile}</h3>
+                                <p className={`section-subtitle text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.accountInfo}</p>
+                            </div>
+                            <div className="profile-info p-5">
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'}`}>
+                                        U
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>User Name</p>
+                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>user@email.com</p>
+                                    </div>
+                                    <button className={darkMode ? 'text-gray-500' : 'text-gray-400'}>
+                                        <ChevronRight size={20} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={`preferences-section settings-section ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`section-header p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`section-title font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.preferences}</h3>
+                            </div>
+                            <div className="preferences-list p-5 space-y-5">
+                                <div className="preference-item flex items-center justify-between">
+                                    <div className="preference-info">
+                                        <p className={`preference-label font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.notifications}</p>
+                                        <p className={`preference-description text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.receiveReminders}</p>
+                                    </div>
+                                    <label className="toggle-switch relative inline-block w-12 h-6">
+                                        <input type="checkbox" defaultChecked className="opacity-0 w-0 h-0 peer" />
+                                        <span className={`absolute cursor-pointer inset-0 rounded-full transition ${darkMode ? 'peer-checked:bg-white bg-gray-700' : 'bg-gray-300 peer-checked:bg-gray-900'}`}></span>
+                                        <span className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-6"></span>
+                                    </label>
+                                </div>
+                                <div className="preference-item flex items-center justify-between">
+                                    <div className="preference-info">
+                                        <p className={`preference-label font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.darkMode}</p>
+                                        <p className={`preference-description text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.interfaceTheme}</p>
+                                    </div>
+                                    <label className="toggle-switch relative inline-block w-12 h-6">
+                                        <input
+                                            type="checkbox"
+                                            checked={darkMode}
+                                            onChange={toggleDarkMode}
+                                            className="opacity-0 w-0 h-0 peer"
+                                        />
+                                        <span className={`absolute cursor-pointer inset-0 rounded-full transition ${darkMode ? 'bg-white' : 'bg-gray-300'}`}></span>
+                                        <span className={`absolute top-1 w-4 h-4 rounded-full transition ${darkMode ? 'left-7 bg-gray-900' : 'left-1 bg-white'}`}></span>
+                                    </label>
+                                </div>
+                                <div className="preference-item flex items-center justify-between">
+                                    <div className="preference-info">
+                                        <p className={`preference-label font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.soundEffects}</p>
+                                        <p className={`preference-description text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.audioFeedback}</p>
+                                    </div>
+                                    <label className="toggle-switch relative inline-block w-12 h-6">
+                                        <input type="checkbox" defaultChecked className="opacity-0 w-0 h-0 peer" />
+                                        <span className={`absolute cursor-pointer inset-0 rounded-full transition ${darkMode ? 'peer-checked:bg-white bg-gray-700' : 'bg-gray-300 peer-checked:bg-gray-900'}`}></span>
+                                        <span className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-6"></span>
+                                    </label>
+                                </div>
+                                <div className="preference-item flex items-center justify-between">
+                                    <div className="preference-info">
+                                        <p className={`preference-label font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            {language === 'pt' ? 'Idioma' : 'Language'}
+                                        </p>
+                                        <p className={`preference-description text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            {language === 'pt' ? 'Português / English' : 'English / Português'}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={toggleLanguage}
+                                        className={`language-toggle-button px-4 py-2 rounded-full font-semibold transition hover:scale-105 ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'
+                                            }`}
+                                    >
+                                        {language === 'pt' ? 'EN' : 'PT'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={`auto-deletion-section settings-section ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`section-header p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`section-title font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    {language === 'pt' ? 'Exclusão Automática' : 'Auto Deletion'}
+                                </h3>
+                                <p className={`section-subtitle text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                    {language === 'pt' ? 'Excluir eventos antigos automaticamente' : 'Automatically delete old events'}
+                                </p>
+                            </div>
+                            <div className="deletion-options p-5">
+                                <div className="grid grid-cols-2 gap-3 mb-3">
+                                    <button
+                                        onClick={() => setAutoDeletion('off')}
+                                        className={`py-3 rounded-2xl font-semibold transition hover:scale-105 ${autoDeletion === 'off'
+                                            ? (darkMode ? 'bg-white text-gray-900 shadow-lg' : 'bg-gray-900 text-white shadow-lg')
+                                            : (darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700')
+                                            }`}
+                                    >
+                                        {language === 'pt' ? 'Desativado' : 'Off'}
+                                    </button>
+                                    <button
+                                        onClick={() => setAutoDeletion('30')}
+                                        className={`py-3 rounded-2xl font-semibold transition hover:scale-105 ${autoDeletion === '30'
+                                            ? (darkMode ? 'bg-white text-gray-900 shadow-lg' : 'bg-gray-900 text-white shadow-lg')
+                                            : (darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700')
+                                            }`}
+                                    >
+                                        {language === 'pt' ? '30 dias' : '30 days'}
+                                    </button>
+                                    <button
+                                        onClick={() => setAutoDeletion('60')}
+                                        className={`py-3 rounded-2xl font-semibold transition hover:scale-105 ${autoDeletion === '60'
+                                            ? (darkMode ? 'bg-white text-gray-900 shadow-lg' : 'bg-gray-900 text-white shadow-lg')
+                                            : (darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700')
+                                            }`}
+                                    >
+                                        {language === 'pt' ? '60 dias' : '60 days'}
+                                    </button>
+                                    <button
+                                        onClick={() => setAutoDeletion('120')}
+                                        className={`py-3 rounded-2xl font-semibold transition hover:scale-105 ${autoDeletion === '120'
+                                            ? (darkMode ? 'bg-white text-gray-900 shadow-lg' : 'bg-gray-900 text-white shadow-lg')
+                                            : (darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700')
+                                            }`}
+                                    >
+                                        {language === 'pt' ? '120 dias' : '120 days'}
+                                    </button>
+                                </div>
+                                <div className={`text-center text-sm font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                    {language === 'pt'
+                                        ? `Selecionado: ${getAutoDeletionText()}`
+                                        : `Selected: ${getAutoDeletionText()}`
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={`about-section settings-section ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`section-header p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`section-title font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.about}</h3>
+                            </div>
+                            <div className="about-links p-5 space-y-4">
+                                <button className="w-full flex items-center justify-between">
+                                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.version}</span>
+                                    <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>2.1.0</span>
+                                </button>
+                                <button className="w-full flex items-center justify-between">
+                                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.privacyPolicy}</span>
+                                    <ChevronRight size={20} className={darkMode ? 'text-gray-500' : 'text-gray-400'} />
+                                </button>
+                                <button className="w-full flex items-center justify-between">
+                                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.termsOfService}</span>
+                                    <ChevronRight size={20} className={darkMode ? 'text-gray-500' : 'text-gray-400'} />
+                                </button>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => setIsLoggedIn(false)}
+                            className="w-full bg-red-500 text-white py-4 rounded-3xl font-bold shadow-sm hover:bg-red-600 transition"
+                        >
+                            {t.signOut}
+                        </button>
+                    </div>
+                </div>
+            );
+
+            const LoginScreen = () => {
+                const [username, setUsername] = useState('');
+                const [password, setPassword] = useState('');
+
+                const handleLogin = (e) => {
+                    e.preventDefault();
+                    // Mock login - accepts any username/password
+                    if (username && password) {
+                        setIsLoggedIn(true);
+                    }
+                };
+
+                return (
+                    <div className="login-screen-wrapper w-full h-screen flex items-center justify-center bg-white">
+                        <div className="login-container app-main-container w-full mx-auto h-screen bg-light rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center animate-fade-in">
+                            <div className="login-form-wrapper p-8 w-full">
+                                {/* Logo/Header */}
+                                <div className="login-header text-center mb-8">
+                                    <div className="inline-flex items-center justify-center mb-4">
+                                        <svg width="96" height="96" viewBox="0 0 200 200" className="mx-auto rounded-3xl" style={{ background: '#2c4a5f' }}>
+                                            {/* Decorative stars */}
+                                            <circle cx="60" cy="30" r="1.5" fill="white" opacity="0.8" />
+                                            <circle cx="140" cy="35" r="1.5" fill="white" opacity="0.8" />
+                                            <circle cx="50" cy="80" r="1" fill="white" opacity="0.6" />
+                                            <circle cx="150" cy="75" r="1" fill="white" opacity="0.6" />
+
+                                            {/* Left leaves */}
+                                            <path d="M45 130 L40 120 L43 122 L38 115 L41 117 L36 110" stroke="white" strokeWidth="2" fill="none" opacity="0.7" />
+                                            <path d="M38 135 L33 125 L36 127 L31 120 L34 122 L29 115" stroke="white" strokeWidth="2" fill="none" opacity="0.6" />
+
+                                            {/* Right leaves */}
+                                            <path d="M155 105 L160 95 L157 97 L162 90 L159 92 L164 85" stroke="white" strokeWidth="2" fill="none" opacity="0.7" />
+                                            <path d="M162 110 L167 100 L164 102 L169 95 L166 97 L171 90" stroke="white" strokeWidth="2" fill="none" opacity="0.6" />
+
+                                            {/* Toaster body */}
+                                            <rect x="60" y="115" width="80" height="50" rx="8" fill="#e8e6e1" />
+
+                                            {/* Toaster slot */}
+                                            <rect x="70" y="125" width="60" height="3" rx="1.5" fill="#333" />
+
+                                            {/* Toaster controls */}
+                                            <circle cx="70" cy="150" r="3" fill="#333" />
+                                            <line x1="75" y1="140" x2="75" y2="160" stroke="#333" strokeWidth="2" />
+
+                                            {/* Paper coming out of toaster */}
+                                            <path d="M85 70 L82 95 L118 95 L115 70 Q113 62 107 62 L93 62 Q87 62 85 70z" fill="white" stroke="#333" strokeWidth="1.5" />
+
+                                            {/* Paper header (blue bar) */}
+                                            <rect x="84" y="52" width="32" height="8" rx="2" fill="#7ba4d9" />
+
+                                            {/* Paper dots */}
+                                            <circle cx="92" cy="56" r="1.5" fill="#ff6b6b" />
+                                            <circle cx="100" cy="56" r="1.5" fill="#ffd93d" />
+                                            <circle cx="108" cy="56" r="1.5" fill="#51cf66" />
+
+                                            {/* TO DO LIST text */}
+                                            <text x="91" y="70" fontSize="8" fontWeight="bold" fill="#333">TO DO</text>
+                                            <text x="93" y="80" fontSize="8" fontWeight="bold" fill="#333">LIST</text>
+
+                                            {/* Paper lines */}
+                                            <line x1="90" y1="85" x2="110" y2="85" stroke="#333" strokeWidth="1" />
+                                            <line x1="90" y1="90" x2="110" y2="90" stroke="#333" strokeWidth="1" />
+
+                                            {/* Pencil */}
+                                            <rect x="145" y="140" width="4" height="20" fill="#ffd93d" transform="rotate(-25 147 150)" />
+                                            <path d="M144 137 L150 137 L149 141 L145 141 Z" fill="#333" transform="rotate(-25 147 139)" />
+                                            <line x1="146" y1="142" x2="155" y2="155" stroke="#333" strokeWidth="1.5" />
+                                        </svg>
+                                    </div>
+                                    <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontFamily: "'Roboto Mono', monospace" }}>Schedio</h1>
+                                    <p className="text-gray-500 text-sm">{t.welcomeBack}</p>
+                                </div>
+
+                                {/* Login Form */}
+                                <form onSubmit={handleLogin} className="login-form space-y-5">
+                                    <div className="form-field-group">
+                                        <label className="form-label block text-sm font-semibold text-gray-700 mb-2">
+                                            {t.username}
+                                        </label>
+                                        <div className="input-wrapper relative">
+                                            <div className="input-icon absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                                <User size={20} className="text-gray-400" />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={username}
+                                                onChange={(e) => setUsername(e.target.value)}
+                                                placeholder={t.enterUsername}
+                                                className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-purple-500 focus:bg-white transition text-gray-900 placeholder-gray-400"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="form-field-group">
+                                        <label className="form-label block text-sm font-semibold text-gray-700 mb-2">
+                                            {t.password}
+                                        </label>
+                                        <div className="input-wrapper relative">
+                                            <div className="input-icon absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                                <Lock size={20} className="text-gray-400" />
+                                            </div>
+                                            <input
+                                                type="password"
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                placeholder={t.enterPassword}
+                                                className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-purple-500 focus:bg-white transition text-gray-900 placeholder-gray-400"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="login-options flex items-center justify-between text-sm">
+                                        <label className="remember-me-checkbox flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" />
+                                            <span className="text-gray-600">{t.rememberMe}</span>
+                                        </label>
+                                        <button type="button" className="forgot-password-link text-purple-600 font-semibold hover:text-purple-700 transition">
+                                            {t.forgotPassword}
+                                        </button>
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        className="w-full py-4 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
+                                        style={{ backgroundColor: '#1b2e3c' }}
+                                    >
+                                        {t.login}
+                                    </button>
+                                </form>
+
+                                {/* Divider */}
+                                <div className="login-divider flex items-center gap-4 my-6">
+                                    <div className="divider-line flex-1 h-px bg-gray-200"></div>
+                                    <span className="divider-text text-gray-400 text-sm font-medium">{t.or}</span>
+                                    <div className="divider-line flex-1 h-px bg-gray-200"></div>
+                                </div>
+
+                                {/* Social Login Buttons */}
+                                <div className="social-login-buttons grid grid-cols-2 gap-3">
+                                    <button className="py-3 border-2 border-gray-200 rounded-2xl font-semibold text-gray-700 hover:bg-gray-50 transition">
+                                        Google
+                                    </button>
+                                    <button className="py-3 border-2 border-gray-200 rounded-2xl font-semibold text-gray-700 hover:bg-gray-50 transition">
+                                        Apple
+                                    </button>
+                                </div>
+
+                                {/* Sign Up Link */}
+                                <p className="signup-prompt text-center text-sm text-gray-600 mt-6">
+                                    {t.dontHaveAccount}{' '}
+                                    <button className="signup-link text-purple-600 font-semibold hover:text-purple-700 transition">
+                                        {t.signUp}
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const BottomNav = () => (
+                <div className={`navigation-bar bottom-navigation border-t ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                    <div className="nav-items-container flex items-center justify-around max-w-md mx-auto">
+                        <button
+                            onClick={() => {
+                                setViewMode('today');
+                                setCurrentScreen('home');
+                            }}
+                            className={`nav-item home-nav-item flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'home' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                                }`}
+                        >
+                            <Home size={22} />
+                            <span className="nav-label text-[10px] font-semibold">{t.home}</span>
+                        </button>
+                        <button
+                            onClick={() => {
+                                setSelectedMonth(null);
+                                setCurrentScreen('calendar');
+                            }}
+                            className={`nav-item calendar-nav-item flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'calendar' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                                }`}
+                        >
+                            <Calendar size={22} />
+                            <span className="nav-label text-[10px] font-semibold">{t.calendar}</span>
+                        </button>
+                        <button
+                            onClick={() => {
+                                setSelectedDate(null);
+                                setCurrentScreen('add');
+                            }}
+                            className="nav-item add-nav-item flex flex-col items-center gap-1 text-white min-w-[52px]"
+                        >
+                            <div className={`add-button-circle p-3.5 rounded-2xl -mt-6 shadow-lg ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900'}`}>
+                                <Plus size={24} />
+                            </div>
+                        </button>
+                        <button
+                            onClick={() => setCurrentScreen('stats')}
+                            className={`nav-item stats-nav-item flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'stats' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                                }`}
+                        >
+                            <BarChart3 size={22} />
+                            <span className="nav-label text-[10px] font-semibold">{t.stats}</span>
+                        </button>
+                        <button
+                            onClick={() => setCurrentScreen('config')}
+                            className={`nav-item settings-nav-item flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'config' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                                }`}
+                        >
+                            <Settings size={22} />
+                            <span className="nav-label text-[10px] font-semibold leading-tight">{t.settings}</span>
+                        </button>
+                    </div>
+                </div>
+            );
+
+            // Show login screen if not logged in
+            if (!isLoggedIn) {
+                return <LoginScreen />;
+            }
+
+            // Show main app if logged in
+            return (
+                <div className="app-wrapper w-full h-screen flex items-center justify-center bg-white">
+                    <div className={`app-container app-main-container w-full mx-auto h-screen flex flex-col ${darkMode ? 'bg-gray-900' : 'bg-light'} rounded-3xl shadow-2xl overflow-hidden`}>
+                        <div className="screens-container flex-1 overflow-hidden">
+                            {currentScreen === 'home' && <HomeScreen />}
+                            {currentScreen === 'calendar' && <CalendarScreen />}
+                            {currentScreen === 'add' && <AddTaskScreen />}
+                            {currentScreen === 'stats' && <StatsScreen />}
+                            {currentScreen === 'config' && <ConfigScreen />}
+                        </div>
+                        <BottomNav />
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<SchedioPrototypes />);
+    </script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Use relative path for GitHub Pages
+                const swPath = window.location.pathname.includes('/schedio/')
+                    ? '/schedio/service-worker.js'
+                    : '/service-worker.js';
+
+                navigator.serviceWorker.register(swPath, {
+                    scope: window.location.pathname.includes('/schedio/') ? '/schedio/' : '/'
+                })
+                    .then((registration) => {
+                        console.log('Service Worker registered successfully:', registration.scope);
+
+                        // Check for updates periodically
+                        setInterval(() => {
+                            registration.update();
+                        }, 60000); // Check every minute
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+
+            // Listen for service worker updates
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                console.log('New service worker activated');
+            });
+        }
+
+        // Add install prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            console.log('PWA install prompt available');
+
+            // You can show your own install button here
+            // For now, we'll just log it
+        });
+
+        // Detect if app was launched as PWA
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed');
+            deferredPrompt = null;
+        });
+
+        // Check if running as PWA
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            console.log('Running as PWA');
+        }
+    </script>
+</body>
+
+</html>
