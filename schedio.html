@@ -68,6 +68,66 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
+
+        /* Semantic Container Classes */
+        .app-main-container {
+            max-width: 500px;
+        }
+
+        .screen-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .screen-header {
+            padding: 1.5rem;
+            padding-bottom: 1rem;
+        }
+
+        .screen-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            padding-top: 0;
+        }
+
+        .date-display-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .task-list-section {
+            margin-bottom: 1rem;
+        }
+
+        .calendar-grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .navigation-bar {
+            padding: 1rem 1.5rem;
+        }
+
+        .form-container {
+            padding: 1.5rem;
+            padding-top: 0;
+            overflow-y: auto;
+        }
+
+        .stats-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-section {
+            border-radius: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 
@@ -308,6 +368,9 @@
                 reminder: language === 'pt' ? 'Lembrete' : 'Reminder',
                 createEvent: language === 'pt' ? 'Criar Evento' : 'Create Event',
                 addDetails: language === 'pt' ? 'Adicione detalhes sobre este evento...' : 'Add details about this event...',
+                invitePeople: language === 'pt' ? 'Convidar Pessoas' : 'Invite People',
+                selectFriends: language === 'pt' ? 'Selecione amigos' : 'Select friends',
+                selected: language === 'pt' ? 'selecionado(s)' : 'selected',
 
                 // Calendar
                 eventsThisMonth: language === 'pt' ? 'Eventos este mês' : 'Events this month',
@@ -362,6 +425,18 @@
                 { name: 'Estudos', color: 'bg-blue-400', bgCard: 'bg-blue-50', border: 'border-blue-200' },
                 { name: 'Trabalho', color: 'bg-purple-400', bgCard: 'bg-purple-50', border: 'border-purple-200' },
                 { name: 'Pessoal', color: 'bg-amber-400', bgCard: 'bg-amber-50', border: 'border-amber-200' }
+            ];
+
+            // Mock friends data
+            const mockFriends = [
+                { id: 1, name: 'Ana Silva', avatar: '👩', color: 'bg-pink-100' },
+                { id: 2, name: 'João Santos', avatar: '👨', color: 'bg-blue-100' },
+                { id: 3, name: 'Maria Costa', avatar: '👩‍🦰', color: 'bg-purple-100' },
+                { id: 4, name: 'Pedro Lima', avatar: '👨‍💼', color: 'bg-green-100' },
+                { id: 5, name: 'Sofia Alves', avatar: '👱‍♀️', color: 'bg-yellow-100' },
+                { id: 6, name: 'Lucas Rocha', avatar: '👨‍🎓', color: 'bg-indigo-100' },
+                { id: 7, name: 'Beatriz Ferreira', avatar: '👩‍💻', color: 'bg-rose-100' },
+                { id: 8, name: 'Rafael Martins', avatar: '👨‍🔧', color: 'bg-cyan-100' }
             ];
 
             const meetings = [
@@ -431,10 +506,10 @@
             };
 
             const HomeScreen = () => (
-                <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                <div className={`screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
                     {/* Header with view toggle */}
-                    <div className="p-6 pb-4">
-                        <div className="flex items-center justify-between mb-6">
+                    <div className="screen-header">
+                        <div className="view-toggle-section flex items-center justify-between mb-6">
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setViewMode('today')}
@@ -462,16 +537,16 @@
                     </div>
 
                     {viewMode === 'today' ? (
-                        <div className="flex-1 overflow-y-auto px-6 animate-fade-in">
+                        <div className="today-view-content screen-content animate-fade-in">
                             {/* Large Date Display */}
-                            <div className="mb-6">
-                                <div className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.tuesday}</div>
-                                <div className="flex items-start gap-6">
-                                    <div>
-                                        <div className={`text-7xl font-bold leading-none mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>13.12</div>
-                                        <div className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>DEC</div>
+                            <div className="date-display-section">
+                                <div className={`day-label text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.tuesday}</div>
+                                <div className="date-time-container flex items-start gap-6">
+                                    <div className="main-date-display">
+                                        <div className={`date-number text-7xl font-bold leading-none mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>13.12</div>
+                                        <div className={`month-label text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>DEC</div>
                                     </div>
-                                    <div className="flex flex-col gap-3 mt-2">
+                                    <div className="timezone-clocks flex flex-col gap-3 mt-2">
                                         <div className="text-right">
                                             <div className={`text-2xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>1:20 PM</div>
                                             <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>New York</div>
@@ -485,20 +560,20 @@
                             </div>
 
                             {/* Tasks Section */}
-                            <div className="mb-4">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.todaysTasks}</h3>
-                                    <button className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.reminders}</button>
+                            <div className="task-list-section">
+                                <div className="task-header flex items-center justify-between mb-3">
+                                    <h3 className={`section-title text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.todaysTasks}</h3>
+                                    <button className={`reminders-button text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.reminders}</button>
                                 </div>
 
-                                <div className="space-y-3">
+                                <div className="task-cards-list space-y-3">
                                     {meetings.map((meeting, idx) => (
-                                        <div key={idx} className={`${meeting.color} rounded-3xl p-4 event-card shadow-sm`}>
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div className="flex-1">
-                                                    <h4 className="text-lg font-bold text-gray-800 mb-1">{meeting.title}</h4>
+                                        <div key={idx} className={`task-card ${meeting.color} rounded-3xl p-4 event-card shadow-sm`}>
+                                            <div className="task-card-header flex items-start justify-between mb-3">
+                                                <div className="task-info flex-1">
+                                                    <h4 className="task-title text-lg font-bold text-gray-800 mb-1">{meeting.title}</h4>
                                                 </div>
-                                                <div className="flex -space-x-2">
+                                                <div className="avatar-group flex -space-x-2">
                                                     {meeting.avatars.map((avatar, i) => (
                                                         <div key={i} className="w-8 h-8 rounded-full bg-white border-2 border-white flex items-center justify-center text-sm">
                                                             {avatar}
@@ -506,18 +581,18 @@
                                                     ))}
                                                 </div>
                                             </div>
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-3">
-                                                    <div>
-                                                        <div className="text-xs text-gray-600 mb-0.5">{t.start}</div>
-                                                        <div className="text-sm font-bold text-gray-900">{meeting.startTime}</div>
+                                            <div className="task-card-footer flex items-center justify-between">
+                                                <div className="task-timing flex items-center gap-3">
+                                                    <div className="start-time-group">
+                                                        <div className="time-label text-xs text-gray-600 mb-0.5">{t.start}</div>
+                                                        <div className="time-value text-sm font-bold text-gray-900">{meeting.startTime}</div>
                                                     </div>
-                                                    <div className="px-3 py-1 bg-gray-900 text-white rounded-full text-xs font-semibold">
+                                                    <div className="duration-badge px-3 py-1 bg-gray-900 text-white rounded-full text-xs font-semibold">
                                                         {meeting.duration}
                                                     </div>
-                                                    <div>
-                                                        <div className="text-xs text-gray-600 mb-0.5">{t.end}</div>
-                                                        <div className="text-sm font-bold text-gray-900">{meeting.endTime}</div>
+                                                    <div className="end-time-group">
+                                                        <div className="time-label text-xs text-gray-600 mb-0.5">{t.end}</div>
+                                                        <div className="time-value text-sm font-bold text-gray-900">{meeting.endTime}</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -527,9 +602,9 @@
                             </div>
                         </div>
                     ) : (
-                        <div className="flex-1 overflow-y-auto px-6 animate-fade-in">
+                        <div className="calendar-view-content screen-content animate-fade-in">
                             {/* Calendar Month Navigation */}
-                            <div className="flex items-center justify-between mb-6">
+                            <div className="month-navigation flex items-center justify-between mb-6">
                                 <button className="text-gray-400"><ChevronLeft size={24} /></button>
                                 <div className="flex items-center gap-4 text-sm font-semibold text-gray-400">
                                     <span>NOV</span>
@@ -540,20 +615,20 @@
                             </div>
 
                             {/* Week Schedule Cards */}
-                            <div className="space-y-3 pb-6">
+                            <div className="week-schedule-cards space-y-3 pb-6">
                                 {weekSchedule.map((day, idx) => (
-                                    <div key={idx} className={`bg-gradient-to-br ${day.color} rounded-3xl p-5 event-card shadow-sm`}>
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div>
-                                                <div className="text-sm text-gray-700 mb-1">{day.day}</div>
-                                                <div className="flex items-end gap-2">
-                                                    <div className="text-5xl font-bold text-gray-900">{day.date}</div>
-                                                    <div className="text-2xl font-bold text-gray-900 mb-1">{day.month}</div>
+                                    <div key={idx} className={`day-schedule-card bg-gradient-to-br ${day.color} rounded-3xl p-5 event-card shadow-sm`}>
+                                        <div className="day-card-header flex items-start justify-between mb-4">
+                                            <div className="date-info">
+                                                <div className="weekday-name text-sm text-gray-700 mb-1">{day.day}</div>
+                                                <div className="date-display flex items-end gap-2">
+                                                    <div className="day-number text-5xl font-bold text-gray-900">{day.date}</div>
+                                                    <div className="month-name text-2xl font-bold text-gray-900 mb-1">{day.month}</div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center gap-3">
+                                        <div className="hourly-slots flex items-center gap-3">
                                             {['9 am', '10 am', '11 am', '3 pm', '4 pm', '5 pm'].map((time, i) => (
                                                 <div key={i} className="flex-1">
                                                     <div className="text-xs text-gray-600 mb-2">{time}</div>
@@ -618,9 +693,9 @@
                     const calendarDays = generateCalendar(monthData);
 
                     return (
-                        <div className={`flex flex-col h-full animate-fade-in ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
-                            <div className="p-6">
-                                <div className="flex items-center justify-between mb-4">
+                        <div className={`month-detail-view screen-container animate-fade-in ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                            <div className="screen-header">
+                                <div className="calendar-navigation flex items-center justify-between mb-4">
                                     <button
                                         onClick={() => setSelectedMonth(null)}
                                         className={`w-10 h-10 rounded-full flex items-center justify-center shadow-sm ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
@@ -642,16 +717,16 @@
                                 </div>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto px-6 pb-6">
-                                <div className={`bg-gradient-to-br ${monthData.color} rounded-3xl p-6 shadow-lg`}>
-                                    <div className="grid grid-cols-7 gap-3 mb-3">
+                            <div className="month-calendar-content screen-content">
+                                <div className={`calendar-month-grid bg-gradient-to-br ${monthData.color} rounded-3xl p-6 shadow-lg`}>
+                                    <div className="weekday-headers grid grid-cols-7 gap-3 mb-3">
                                         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                                            <div key={i} className="text-center text-sm font-bold text-white/80">
+                                            <div key={i} className="weekday-header text-center text-sm font-bold text-white/80">
                                                 {day}
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="grid grid-cols-7 gap-3">
+                                    <div className="calendar-days-grid grid grid-cols-7 gap-3">
                                         {calendarDays.map((date, i) => {
                                             const dateStr = date ? `2025-${String(monthData.number + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}` : null;
                                             const hasEvents = dateStr && events[dateStr];
@@ -685,9 +760,9 @@
                                 </div>
 
                                 {/* Events for selected month */}
-                                <div className="mt-6">
-                                    <h3 className={`text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.eventsThisMonth}</h3>
-                                    <div className="space-y-3">
+                                <div className="month-events-section mt-6">
+                                    <h3 className={`section-title text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.eventsThisMonth}</h3>
+                                    <div className="event-list space-y-3">
                                         {Object.keys(events)
                                             .filter(dateStr => dateStr.startsWith(`2025-${String(monthData.number + 1).padStart(2, '0')}`))
                                             .sort()
@@ -696,13 +771,22 @@
                                                 return events[dateStr].map((event, idx) => (
                                                     <div key={`${dateStr}-${idx}`} className={`${event.color} rounded-2xl p-4 shadow-sm`}>
                                                         <div className="flex items-center justify-between">
-                                                            <div>
+                                                            <div className="flex-1">
                                                                 <div className="text-sm font-semibold text-gray-600 mb-1">
                                                                     {monthData.name} {day}
                                                                 </div>
                                                                 <div className="font-bold text-gray-900">{event.title}</div>
                                                                 <div className="text-sm text-gray-700 mt-1">{event.time}</div>
                                                             </div>
+                                                            {event.avatars && event.avatars.length > 0 && (
+                                                                <div className="flex -space-x-2">
+                                                                    {event.avatars.map((avatar, i) => (
+                                                                        <div key={i} className="w-8 h-8 rounded-full bg-white border-2 border-white flex items-center justify-center text-sm">
+                                                                            {avatar}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 ));
@@ -723,9 +807,9 @@
 
                 // Year overview
                 return (
-                    <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
-                        <div className="p-6">
-                            <div className="flex items-center justify-between mb-4">
+                    <div className={`year-overview screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                        <div className="screen-header">
+                            <div className="year-header flex items-center justify-between mb-4">
                                 <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                                     2025
                                 </div>
@@ -738,8 +822,8 @@
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto px-4 pb-6">
-                            <div className="grid grid-cols-2 gap-4">
+                        <div className="year-months-content screen-content">
+                            <div className="calendar-grid-container">
                                 {months.map((month) => {
                                     const isCurrent = month.number === currentMonthIndex;
                                     const monthEvents = Object.keys(events).filter(dateStr =>
@@ -750,24 +834,24 @@
                                         <button
                                             key={month.number}
                                             onClick={() => setSelectedMonth(month.number)}
-                                            className={`bg-gradient-to-br ${month.color} rounded-3xl p-4 shadow-md event-card ${isCurrent ? 'ring-4 ring-gray-900' : ''}`}
+                                            className={`month-card bg-gradient-to-br ${month.color} rounded-3xl p-4 shadow-md event-card ${isCurrent ? 'ring-4 ring-gray-900' : ''}`}
                                         >
-                                            <div className="text-center mb-3">
-                                                <h3 className="text-white font-bold text-lg mb-0.5">{month.name.toUpperCase()}</h3>
+                                            <div className="month-card-header text-center mb-3">
+                                                <h3 className="month-name text-white font-bold text-lg mb-0.5">{month.name.toUpperCase()}</h3>
                                                 {monthEvents > 0 && (
-                                                    <div className="text-white/80 text-xs font-semibold">{monthEvents} {monthEvents !== 1 ? t.events : t.event}</div>
+                                                    <div className="event-count text-white/80 text-xs font-semibold">{monthEvents} {monthEvents !== 1 ? t.events : t.event}</div>
                                                 )}
                                             </div>
 
-                                            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3">
-                                                <div className="grid grid-cols-7 gap-1 mb-2">
+                                            <div className="mini-calendar bg-white/20 backdrop-blur-sm rounded-2xl p-3">
+                                                <div className="mini-weekday-headers grid grid-cols-7 gap-1 mb-2">
                                                     {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                                                        <div key={i} className="text-center text-[8px] font-bold text-white/70">
+                                                        <div key={i} className="mini-weekday-header text-center text-[8px] font-bold text-white/70">
                                                             {day}
                                                         </div>
                                                     ))}
                                                 </div>
-                                                <div className="grid grid-cols-7 gap-1">
+                                                <div className="mini-calendar-days grid grid-cols-7 gap-1">
                                                     {generateCalendar(month).map((date, i) => {
                                                         const dateStr = date ? `2025-${String(month.number + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}` : null;
                                                         const hasEvents = dateStr && events[dateStr];
@@ -807,6 +891,8 @@
                 const [selectedColor, setSelectedColor] = useState(0);
                 const [selectedCategory, setSelectedCategory] = useState(0);
                 const [eventDescription, setEventDescription] = useState('');
+                const [selectedFriends, setSelectedFriends] = useState([]);
+                const [showFriendsModal, setShowFriendsModal] = useState(false);
 
                 const colorThemes = [
                     'bg-gradient-to-br from-amber-200 to-amber-300',
@@ -816,6 +902,14 @@
                     'bg-gradient-to-br from-teal-200 to-teal-300'
                 ];
 
+                const toggleFriendSelection = (friendId) => {
+                    setSelectedFriends(prev =>
+                        prev.includes(friendId)
+                            ? prev.filter(id => id !== friendId)
+                            : [...prev, friendId]
+                    );
+                };
+
                 const handleCreateEvent = () => {
                     if (!eventTitle || !eventTime) {
                         alert('Please fill in event title and time');
@@ -823,11 +917,16 @@
                     }
 
                     const dateToUse = selectedDate || new Date().toISOString().split('T')[0];
+                    const friendAvatars = selectedFriends.map(id =>
+                        mockFriends.find(f => f.id === id)?.avatar || '👤'
+                    );
+
                     const newEvent = {
                         title: eventTitle,
                         time: eventTime,
                         color: colorThemes[selectedColor],
-                        category: categories[selectedCategory].name
+                        category: categories[selectedCategory].name,
+                        avatars: friendAvatars.length > 0 ? friendAvatars : undefined
                     };
 
                     setEvents(prev => ({
@@ -841,14 +940,15 @@
                     setEventDescription('');
                     setSelectedColor(0);
                     setSelectedCategory(0);
+                    setSelectedFriends([]);
                     setSelectedDate(null);
                     setCurrentScreen('calendar');
                 };
 
                 return (
-                    <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
-                        <div className="p-6 pb-4">
-                            <div className="flex items-center gap-3 mb-6">
+                    <div className={`add-task-screen screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                        <div className="screen-header">
+                            <div className="header-navigation flex items-center gap-3 mb-6">
                                 <button
                                     onClick={() => {
                                         setSelectedDate(null);
@@ -861,7 +961,7 @@
                                 <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.newEvent}</h1>
                             </div>
                             {selectedDate && (
-                                <div className={`rounded-2xl p-3 text-sm font-semibold ${darkMode ? 'bg-blue-900/30 border border-blue-700 text-blue-300' : 'bg-blue-50 border border-blue-200 text-blue-900'}`}>
+                                <div className={`selected-date-badge rounded-2xl p-3 text-sm font-semibold ${darkMode ? 'bg-blue-900/30 border border-blue-700 text-blue-300' : 'bg-blue-50 border border-blue-200 text-blue-900'}`}>
                                     📅 {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
                                         weekday: 'long',
                                         year: 'numeric',
@@ -872,9 +972,9 @@
                             )}
                         </div>
 
-                        <div className="flex-1 p-6 pt-0 overflow-y-auto">
-                            <div className="space-y-4">
-                                <div>
+                        <div className="form-container">
+                            <div className="event-form space-y-4">
+                                <div className="form-field-group">
                                     <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.eventTitle}</label>
                                     <input
                                         type="text"
@@ -888,9 +988,9 @@
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.date}</label>
+                                <div className="date-time-fields grid grid-cols-2 gap-3">
+                                    <div className="form-field-group">
+                                        <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.date}</label>
                                         <input
                                             type="date"
                                             value={selectedDate || ''}
@@ -901,8 +1001,8 @@
                                                 }`}
                                         />
                                     </div>
-                                    <div>
-                                        <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.time}</label>
+                                    <div className="form-field-group">
+                                        <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.time}</label>
                                         <input
                                             type="time"
                                             value={eventTime}
@@ -915,9 +1015,9 @@
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.category}</label>
-                                    <div className="grid grid-cols-2 gap-2">
+                                <div className="form-field-group">
+                                    <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.category}</label>
+                                    <div className="category-buttons grid grid-cols-2 gap-2">
                                         {categories.map((cat, idx) => (
                                             <button
                                                 key={idx}
@@ -931,9 +1031,9 @@
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.colorTheme}</label>
-                                    <div className="flex gap-2">
+                                <div className="form-field-group">
+                                    <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.colorTheme}</label>
+                                    <div className="color-picker flex gap-2">
                                         {colorThemes.map((color, idx) => (
                                             <button
                                                 key={idx}
@@ -944,8 +1044,8 @@
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.description}</label>
+                                <div className="form-field-group">
+                                    <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.description}</label>
                                     <textarea
                                         placeholder={t.addDetails}
                                         rows="4"
@@ -958,7 +1058,74 @@
                                     ></textarea>
                                 </div>
 
-                                <div className={`flex items-center justify-between rounded-2xl p-4 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                                {/* Invite People Section */}
+                                <div className="form-field-group">
+                                    <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.invitePeople}</label>
+
+                                    {/* Selected Friends Display */}
+                                    <div className={`rounded-2xl p-4 border mb-3 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                {selectedFriends.length} {t.selected}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowFriendsModal(!showFriendsModal)}
+                                                className={`px-4 py-2 rounded-full text-sm font-semibold transition ${darkMode ? 'bg-white text-gray-900 hover:bg-gray-100' : 'bg-gray-900 text-white hover:bg-gray-800'}`}
+                                            >
+                                                {showFriendsModal ? '✕ ' + (language === 'pt' ? 'Fechar' : 'Close') : '+ ' + (language === 'pt' ? 'Adicionar' : 'Add')}
+                                            </button>
+                                        </div>
+
+                                        {/* Selected Friends Avatars */}
+                                        {selectedFriends.length > 0 && (
+                                            <div className="flex -space-x-2">
+                                                {selectedFriends.map(friendId => {
+                                                    const friend = mockFriends.find(f => f.id === friendId);
+                                                    return (
+                                                        <div key={friendId} className="w-10 h-10 rounded-full bg-white border-2 border-white flex items-center justify-center text-lg shadow-sm relative group">
+                                                            {friend?.avatar}
+                                                            <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                                                                {friend?.name}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Friends Selection Modal */}
+                                    {showFriendsModal && (
+                                        <div className={`rounded-2xl p-4 border max-h-64 overflow-y-auto ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {mockFriends.map(friend => (
+                                                    <button
+                                                        key={friend.id}
+                                                        type="button"
+                                                        onClick={() => toggleFriendSelection(friend.id)}
+                                                        className={`flex items-center gap-3 p-3 rounded-xl transition ${selectedFriends.includes(friend.id)
+                                                                ? (darkMode ? 'bg-white text-gray-900 ring-2 ring-white' : 'bg-gray-900 text-white ring-2 ring-gray-900')
+                                                                : (darkMode ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' : 'bg-gray-100 text-gray-900 hover:bg-gray-200')
+                                                            }`}
+                                                    >
+                                                        <div className={`w-10 h-10 rounded-full ${friend.color} flex items-center justify-center text-lg border-2 ${darkMode ? 'border-gray-600' : 'border-white'}`}>
+                                                            {friend.avatar}
+                                                        </div>
+                                                        <div className="flex-1 text-left overflow-hidden">
+                                                            <div className="text-sm font-semibold truncate">{friend.name}</div>
+                                                        </div>
+                                                        {selectedFriends.includes(friend.id) && (
+                                                            <div className="text-lg">✓</div>
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className={`reminder-toggle flex items-center justify-between rounded-2xl p-4 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
                                     <div className="flex items-center gap-3">
                                         <Bell className={darkMode ? 'text-gray-300' : 'text-gray-700'} size={20} />
                                         <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.reminder}</span>
@@ -986,52 +1153,52 @@
             };
 
             const StatsScreen = () => (
-                <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
-                    <div className="p-6">
-                        <h1 className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.statistics}</h1>
-                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.yourWeeklyProgress}</p>
+                <div className={`stats-screen screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                    <div className="screen-header">
+                        <h1 className={`screen-title text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.statistics}</h1>
+                        <p className={`screen-subtitle text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.yourWeeklyProgress}</p>
                     </div>
 
-                    <div className="flex-1 p-6 pt-0 overflow-y-auto">
-                        <div className="grid grid-cols-2 gap-3 mb-6">
-                            <div className={`rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                                <p className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.currentStreak}</p>
-                                <p className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>7</p>
-                                <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.days}</p>
+                    <div className="stats-content screen-content">
+                        <div className="stats-cards-grid">
+                            <div className={`stat-card rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                                <p className={`stat-label text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.currentStreak}</p>
+                                <p className={`stat-value text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>7</p>
+                                <p className={`stat-unit text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.days}</p>
                             </div>
-                            <div className={`rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                                <p className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.completion}</p>
-                                <p className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>85%</p>
-                                <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.thisWeek}</p>
+                            <div className={`stat-card rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                                <p className={`stat-label text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.completion}</p>
+                                <p className={`stat-value text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>85%</p>
+                                <p className={`stat-unit text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.thisWeek}</p>
                             </div>
                         </div>
 
-                        <div className={`rounded-3xl p-5 shadow-sm border mb-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                            <h3 className={`font-bold mb-5 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.weeklyActivity}</h3>
-                            <div className="flex items-end justify-between h-40 gap-3">
+                        <div className={`weekly-activity-card rounded-3xl p-5 shadow-sm border mb-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                            <h3 className={`card-title font-bold mb-5 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.weeklyActivity}</h3>
+                            <div className="activity-chart flex items-end justify-between h-40 gap-3">
                                 {[t.mon, t.tue, t.wed, t.thu, t.fri, t.sat, t.sun].map((day, idx) => (
-                                    <div key={idx} className="flex-1 flex flex-col items-center gap-3">
-                                        <div className={`w-full rounded-t-2xl ${darkMode ? 'bg-white' : 'bg-gray-900'}`} style={{ height: `${[60, 80, 95, 70, 85, 50, 40][idx]}%` }}></div>
-                                        <span className={`text-xs font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{day}</span>
+                                    <div key={idx} className="chart-bar flex-1 flex flex-col items-center gap-3">
+                                        <div className={`bar-fill w-full rounded-t-2xl ${darkMode ? 'bg-white' : 'bg-gray-900'}`} style={{ height: `${[60, 80, 95, 70, 85, 50, 40][idx]}%` }}></div>
+                                        <span className={`bar-label text-xs font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{day}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        <div className={`rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                            <h3 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.tasksByCategory}</h3>
-                            <div className="space-y-4">
+                        <div className={`category-stats-card rounded-3xl p-5 shadow-sm border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                            <h3 className={`card-title font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.tasksByCategory}</h3>
+                            <div className="category-list space-y-4">
                                 {categories.map((cat, idx) => (
-                                    <div key={idx}>
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center gap-2">
-                                                <div className={`w-3 h-3 rounded-full ${cat.color}`}></div>
-                                                <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{cat.name}</span>
+                                    <div key={idx} className="category-item">
+                                        <div className="category-header flex items-center justify-between mb-2">
+                                            <div className="category-name-wrapper flex items-center gap-2">
+                                                <div className={`category-indicator w-3 h-3 rounded-full ${cat.color}`}></div>
+                                                <span className={`category-name text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{cat.name}</span>
                                             </div>
-                                            <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{[12, 18, 8, 15][idx]}</span>
+                                            <span className={`category-count text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{[12, 18, 8, 15][idx]}</span>
                                         </div>
-                                        <div className={`w-full rounded-full h-2.5 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                                            <div className={`${cat.color} rounded-full h-2.5`} style={{ width: `${[60, 90, 40, 75][idx]}%` }}></div>
+                                        <div className={`progress-bar-track w-full rounded-full h-2.5 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                                            <div className={`progress-bar-fill ${cat.color} rounded-full h-2.5`} style={{ width: `${[60, 90, 40, 75][idx]}%` }}></div>
                                         </div>
                                     </div>
                                 ))}
@@ -1042,19 +1209,19 @@
             );
 
             const ConfigScreen = () => (
-                <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
-                    <div className="p-6">
-                        <h1 className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.settings}</h1>
-                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.customizeExperience}</p>
+                <div className={`config-screen screen-container ${darkMode ? 'bg-gray-900' : 'bg-light'}`}>
+                    <div className="screen-header">
+                        <h1 className={`screen-title text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.settings}</h1>
+                        <p className={`screen-subtitle text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.customizeExperience}</p>
                     </div>
 
-                    <div className="flex-1 p-6 pt-0 overflow-y-auto">
-                        <div className={`rounded-3xl shadow-sm mb-4 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
-                            <div className={`p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.profile}</h3>
-                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.accountInfo}</p>
+                    <div className="settings-content screen-content">
+                        <div className={`profile-section settings-section ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`section-header p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`section-title font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.profile}</h3>
+                                <p className={`section-subtitle text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.accountInfo}</p>
                             </div>
-                            <div className="p-5">
+                            <div className="profile-info p-5">
                                 <div className="flex items-center gap-4">
                                     <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'}`}>
                                         U
@@ -1070,28 +1237,28 @@
                             </div>
                         </div>
 
-                        <div className={`rounded-3xl shadow-sm mb-4 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
-                            <div className={`p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.preferences}</h3>
+                        <div className={`preferences-section settings-section ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`section-header p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`section-title font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.preferences}</h3>
                             </div>
-                            <div className="p-5 space-y-5">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.notifications}</p>
-                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.receiveReminders}</p>
+                            <div className="preferences-list p-5 space-y-5">
+                                <div className="preference-item flex items-center justify-between">
+                                    <div className="preference-info">
+                                        <p className={`preference-label font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.notifications}</p>
+                                        <p className={`preference-description text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.receiveReminders}</p>
                                     </div>
-                                    <label className="relative inline-block w-12 h-6">
+                                    <label className="toggle-switch relative inline-block w-12 h-6">
                                         <input type="checkbox" defaultChecked className="opacity-0 w-0 h-0 peer" />
                                         <span className={`absolute cursor-pointer inset-0 rounded-full transition ${darkMode ? 'peer-checked:bg-white bg-gray-700' : 'bg-gray-300 peer-checked:bg-gray-900'}`}></span>
                                         <span className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-6"></span>
                                     </label>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.darkMode}</p>
-                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.interfaceTheme}</p>
+                                <div className="preference-item flex items-center justify-between">
+                                    <div className="preference-info">
+                                        <p className={`preference-label font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.darkMode}</p>
+                                        <p className={`preference-description text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.interfaceTheme}</p>
                                     </div>
-                                    <label className="relative inline-block w-12 h-6">
+                                    <label className="toggle-switch relative inline-block w-12 h-6">
                                         <input
                                             type="checkbox"
                                             checked={darkMode}
@@ -1102,29 +1269,29 @@
                                         <span className={`absolute top-1 w-4 h-4 rounded-full transition ${darkMode ? 'left-7 bg-gray-900' : 'left-1 bg-white'}`}></span>
                                     </label>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.soundEffects}</p>
-                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.audioFeedback}</p>
+                                <div className="preference-item flex items-center justify-between">
+                                    <div className="preference-info">
+                                        <p className={`preference-label font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.soundEffects}</p>
+                                        <p className={`preference-description text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t.audioFeedback}</p>
                                     </div>
-                                    <label className="relative inline-block w-12 h-6">
+                                    <label className="toggle-switch relative inline-block w-12 h-6">
                                         <input type="checkbox" defaultChecked className="opacity-0 w-0 h-0 peer" />
                                         <span className={`absolute cursor-pointer inset-0 rounded-full transition ${darkMode ? 'peer-checked:bg-white bg-gray-700' : 'bg-gray-300 peer-checked:bg-gray-900'}`}></span>
                                         <span className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-6"></span>
                                     </label>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                <div className="preference-item flex items-center justify-between">
+                                    <div className="preference-info">
+                                        <p className={`preference-label font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                                             {language === 'pt' ? 'Idioma' : 'Language'}
                                         </p>
-                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                        <p className={`preference-description text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                             {language === 'pt' ? 'Português / English' : 'English / Português'}
                                         </p>
                                     </div>
                                     <button
                                         onClick={toggleLanguage}
-                                        className={`px-4 py-2 rounded-full font-semibold transition hover:scale-105 ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'
+                                        className={`language-toggle-button px-4 py-2 rounded-full font-semibold transition hover:scale-105 ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'
                                             }`}
                                     >
                                         {language === 'pt' ? 'EN' : 'PT'}
@@ -1133,16 +1300,16 @@
                             </div>
                         </div>
 
-                        <div className={`rounded-3xl shadow-sm mb-4 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
-                            <div className={`p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <div className={`auto-deletion-section settings-section ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`section-header p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`section-title font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                                     {language === 'pt' ? 'Exclusão Automática' : 'Auto Deletion'}
                                 </h3>
-                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                <p className={`section-subtitle text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                     {language === 'pt' ? 'Excluir eventos antigos automaticamente' : 'Automatically delete old events'}
                                 </p>
                             </div>
-                            <div className="p-5">
+                            <div className="deletion-options p-5">
                                 <div className="grid grid-cols-2 gap-3 mb-3">
                                     <button
                                         onClick={() => setAutoDeletion('off')}
@@ -1190,11 +1357,11 @@
                             </div>
                         </div>
 
-                        <div className={`rounded-3xl shadow-sm mb-4 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
-                            <div className={`p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                                <h3 className={`font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.about}</h3>
+                        <div className={`about-section settings-section ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-100'}`}>
+                            <div className={`section-header p-5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                                <h3 className={`section-title font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.about}</h3>
                             </div>
-                            <div className="p-5 space-y-4">
+                            <div className="about-links p-5 space-y-4">
                                 <button className="w-full flex items-center justify-between">
                                     <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.version}</span>
                                     <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>2.1.0</span>
@@ -1233,74 +1400,31 @@
                 };
 
                 return (
-                    <div className="w-full h-screen flex items-center justify-center bg-white">
-                        <div className="w-full mx-auto h-screen bg-light rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center animate-fade-in" style={{ maxWidth: '500px' }}>
-                            <div className="p-8 w-full">
+                    <div className="login-screen-wrapper w-full h-screen flex items-center justify-center bg-white">
+                        <div className="login-container app-main-container w-full mx-auto h-screen bg-light rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center animate-fade-in">
+                            <div className="login-form-wrapper p-8 w-full">
                                 {/* Logo/Header */}
-                                <div className="text-center mb-8">
+                                <div className="login-header text-center mb-8">
                                     <div className="inline-flex items-center justify-center mb-4">
-                                        <svg width="96" height="96" viewBox="0 0 200 200" className="mx-auto rounded-3xl" style={{ background: '#2c4a5f' }}>
-                                            {/* Decorative stars */}
-                                            <circle cx="60" cy="30" r="1.5" fill="white" opacity="0.8" />
-                                            <circle cx="140" cy="35" r="1.5" fill="white" opacity="0.8" />
-                                            <circle cx="50" cy="80" r="1" fill="white" opacity="0.6" />
-                                            <circle cx="150" cy="75" r="1" fill="white" opacity="0.6" />
-
-                                            {/* Left leaves */}
-                                            <path d="M45 130 L40 120 L43 122 L38 115 L41 117 L36 110" stroke="white" strokeWidth="2" fill="none" opacity="0.7" />
-                                            <path d="M38 135 L33 125 L36 127 L31 120 L34 122 L29 115" stroke="white" strokeWidth="2" fill="none" opacity="0.6" />
-
-                                            {/* Right leaves */}
-                                            <path d="M155 105 L160 95 L157 97 L162 90 L159 92 L164 85" stroke="white" strokeWidth="2" fill="none" opacity="0.7" />
-                                            <path d="M162 110 L167 100 L164 102 L169 95 L166 97 L171 90" stroke="white" strokeWidth="2" fill="none" opacity="0.6" />
-
-                                            {/* Toaster body */}
-                                            <rect x="60" y="115" width="80" height="50" rx="8" fill="#e8e6e1" />
-
-                                            {/* Toaster slot */}
-                                            <rect x="70" y="125" width="60" height="3" rx="1.5" fill="#333" />
-
-                                            {/* Toaster controls */}
-                                            <circle cx="70" cy="150" r="3" fill="#333" />
-                                            <line x1="75" y1="140" x2="75" y2="160" stroke="#333" strokeWidth="2" />
-
-                                            {/* Paper coming out of toaster */}
-                                            <path d="M85 70 L82 95 L118 95 L115 70 Q113 62 107 62 L93 62 Q87 62 85 70z" fill="white" stroke="#333" strokeWidth="1.5" />
-
-                                            {/* Paper header (blue bar) */}
-                                            <rect x="84" y="52" width="32" height="8" rx="2" fill="#7ba4d9" />
-
-                                            {/* Paper dots */}
-                                            <circle cx="92" cy="56" r="1.5" fill="#ff6b6b" />
-                                            <circle cx="100" cy="56" r="1.5" fill="#ffd93d" />
-                                            <circle cx="108" cy="56" r="1.5" fill="#51cf66" />
-
-                                            {/* TO DO LIST text */}
-                                            <text x="91" y="70" fontSize="8" fontWeight="bold" fill="#333">TO DO</text>
-                                            <text x="93" y="80" fontSize="8" fontWeight="bold" fill="#333">LIST</text>
-
-                                            {/* Paper lines */}
-                                            <line x1="90" y1="85" x2="110" y2="85" stroke="#333" strokeWidth="1" />
-                                            <line x1="90" y1="90" x2="110" y2="90" stroke="#333" strokeWidth="1" />
-
-                                            {/* Pencil */}
-                                            <rect x="145" y="140" width="4" height="20" fill="#ffd93d" transform="rotate(-25 147 150)" />
-                                            <path d="M144 137 L150 137 L149 141 L145 141 Z" fill="#333" transform="rotate(-25 147 139)" />
-                                            <line x1="146" y1="142" x2="155" y2="155" stroke="#333" strokeWidth="1.5" />
-                                        </svg>
+                                        <img 
+                                            src="assets/logo.png" 
+                                            alt="Schedio Logo" 
+                                            className="mx-auto rounded-2xl shadow-md"
+                                            style={{ width: '120px', height: '120px', objectFit: 'contain' }}
+                                        />
                                     </div>
                                     <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontFamily: "'Roboto Mono', monospace" }}>Schedio</h1>
                                     <p className="text-gray-500 text-sm">{t.welcomeBack}</p>
                                 </div>
 
                                 {/* Login Form */}
-                                <form onSubmit={handleLogin} className="space-y-5">
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                <form onSubmit={handleLogin} className="login-form space-y-5">
+                                    <div className="form-field-group">
+                                        <label className="form-label block text-sm font-semibold text-gray-700 mb-2">
                                             {t.username}
                                         </label>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                        <div className="input-wrapper relative">
+                                            <div className="input-icon absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                                                 <User size={20} className="text-gray-400" />
                                             </div>
                                             <input
@@ -1314,12 +1438,12 @@
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    <div className="form-field-group">
+                                        <label className="form-label block text-sm font-semibold text-gray-700 mb-2">
                                             {t.password}
                                         </label>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                        <div className="input-wrapper relative">
+                                            <div className="input-icon absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                                                 <Lock size={20} className="text-gray-400" />
                                             </div>
                                             <input
@@ -1333,12 +1457,12 @@
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between text-sm">
-                                        <label className="flex items-center gap-2 cursor-pointer">
+                                    <div className="login-options flex items-center justify-between text-sm">
+                                        <label className="remember-me-checkbox flex items-center gap-2 cursor-pointer">
                                             <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" />
                                             <span className="text-gray-600">{t.rememberMe}</span>
                                         </label>
-                                        <button type="button" className="text-purple-600 font-semibold hover:text-purple-700 transition">
+                                        <button type="button" className="forgot-password-link text-purple-600 font-semibold hover:text-purple-700 transition">
                                             {t.forgotPassword}
                                         </button>
                                     </div>
@@ -1353,14 +1477,14 @@
                                 </form>
 
                                 {/* Divider */}
-                                <div className="flex items-center gap-4 my-6">
-                                    <div className="flex-1 h-px bg-gray-200"></div>
-                                    <span className="text-gray-400 text-sm font-medium">{t.or}</span>
-                                    <div className="flex-1 h-px bg-gray-200"></div>
+                                <div className="login-divider flex items-center gap-4 my-6">
+                                    <div className="divider-line flex-1 h-px bg-gray-200"></div>
+                                    <span className="divider-text text-gray-400 text-sm font-medium">{t.or}</span>
+                                    <div className="divider-line flex-1 h-px bg-gray-200"></div>
                                 </div>
 
                                 {/* Social Login Buttons */}
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="social-login-buttons grid grid-cols-2 gap-3">
                                     <button className="py-3 border-2 border-gray-200 rounded-2xl font-semibold text-gray-700 hover:bg-gray-50 transition">
                                         Google
                                     </button>
@@ -1370,9 +1494,9 @@
                                 </div>
 
                                 {/* Sign Up Link */}
-                                <p className="text-center text-sm text-gray-600 mt-6">
+                                <p className="signup-prompt text-center text-sm text-gray-600 mt-6">
                                     {t.dontHaveAccount}{' '}
-                                    <button className="text-purple-600 font-semibold hover:text-purple-700 transition">
+                                    <button className="signup-link text-purple-600 font-semibold hover:text-purple-700 transition">
                                         {t.signUp}
                                     </button>
                                 </p>
@@ -1383,56 +1507,56 @@
             };
 
             const BottomNav = () => (
-                <div className={`px-6 py-4 border-t ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                    <div className="flex items-center justify-around max-w-md mx-auto">
+                <div className={`navigation-bar bottom-navigation border-t ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                    <div className="nav-items-container flex items-center justify-around max-w-md mx-auto">
                         <button
                             onClick={() => {
                                 setViewMode('today');
                                 setCurrentScreen('home');
                             }}
-                            className={`flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'home' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                            className={`nav-item home-nav-item flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'home' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
                                 }`}
                         >
                             <Home size={22} />
-                            <span className="text-[10px] font-semibold">{t.home}</span>
+                            <span className="nav-label text-[10px] font-semibold">{t.home}</span>
                         </button>
                         <button
                             onClick={() => {
                                 setSelectedMonth(null);
                                 setCurrentScreen('calendar');
                             }}
-                            className={`flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'calendar' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                            className={`nav-item calendar-nav-item flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'calendar' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
                                 }`}
                         >
                             <Calendar size={22} />
-                            <span className="text-[10px] font-semibold">{t.calendar}</span>
+                            <span className="nav-label text-[10px] font-semibold">{t.calendar}</span>
                         </button>
                         <button
                             onClick={() => {
                                 setSelectedDate(null);
                                 setCurrentScreen('add');
                             }}
-                            className="flex flex-col items-center gap-1 text-white min-w-[52px]"
+                            className="nav-item add-nav-item flex flex-col items-center gap-1 text-white min-w-[52px]"
                         >
-                            <div className={`p-3.5 rounded-2xl -mt-6 shadow-lg ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900'}`}>
+                            <div className={`add-button-circle p-3.5 rounded-2xl -mt-6 shadow-lg ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900'}`}>
                                 <Plus size={24} />
                             </div>
                         </button>
                         <button
                             onClick={() => setCurrentScreen('stats')}
-                            className={`flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'stats' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                            className={`nav-item stats-nav-item flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'stats' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
                                 }`}
                         >
                             <BarChart3 size={22} />
-                            <span className="text-[10px] font-semibold">{t.stats}</span>
+                            <span className="nav-label text-[10px] font-semibold">{t.stats}</span>
                         </button>
                         <button
                             onClick={() => setCurrentScreen('config')}
-                            className={`flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'config' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
+                            className={`nav-item settings-nav-item flex flex-col items-center gap-1 transition min-w-[52px] ${currentScreen === 'config' ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-gray-500' : 'text-gray-400')
                                 }`}
                         >
                             <Settings size={22} />
-                            <span className="text-[10px] font-semibold leading-tight">{t.settings}</span>
+                            <span className="nav-label text-[10px] font-semibold leading-tight">{t.settings}</span>
                         </button>
                     </div>
                 </div>
@@ -1445,9 +1569,9 @@
 
             // Show main app if logged in
             return (
-                <div className="w-full h-screen flex items-center justify-center bg-white">
-                    <div className={`w-full mx-auto h-screen flex flex-col ${darkMode ? 'bg-gray-900' : 'bg-light'} rounded-3xl shadow-2xl overflow-hidden`} style={{ maxWidth: '500px' }}>
-                        <div className="flex-1 overflow-hidden">
+                <div className="app-wrapper w-full h-screen flex items-center justify-center bg-white">
+                    <div className={`app-container app-main-container w-full mx-auto h-screen flex flex-col ${darkMode ? 'bg-gray-900' : 'bg-light'} rounded-3xl shadow-2xl overflow-hidden`}>
+                        <div className="screens-container flex-1 overflow-hidden">
                             {currentScreen === 'home' && <HomeScreen />}
                             {currentScreen === 'calendar' && <CalendarScreen />}
                             {currentScreen === 'add' && <AddTaskScreen />}

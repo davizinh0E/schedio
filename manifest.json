@@ -2,7 +2,7 @@
     "name": "Schedio - Modern Calendar",
     "short_name": "Schedio",
     "description": "A modern calendar app to manage your tasks and events",
-    "start_url": "/schedio/schedio_3.html",
+    "start_url": "/schedio/schedio.html",
     "scope": "/schedio/",
     "display": "standalone",
     "background_color": "#eae8dc",
@@ -32,14 +32,14 @@
             "name": "Add Event",
             "short_name": "New Event",
             "description": "Create a new event",
-            "url": "/schedio/schedio_3.html?screen=add",
+            "url": "/schedio/schedio.html?screen=add",
             "icons": []
         },
         {
             "name": "Calendar",
             "short_name": "Calendar",
             "description": "View calendar",
-            "url": "/schedio/schedio_3.html?screen=calendar",
+            "url": "/schedio/schedio.html?screen=calendar",
             "icons": []
         }
     ]

@@ -1,11 +1,11 @@
-const CACHE_NAME = 'schedio-v2';
+const CACHE_NAME = 'schedio-v4';
 const BASE_PATH = '/schedio/';
 const urlsToCache = [
     `${BASE_PATH}schedio.html`,
-    `${BASE_PATH}schedio_3.html`,
     `${BASE_PATH}manifest.json`,
     `${BASE_PATH}assets/icons/icon-192.png`,
     `${BASE_PATH}assets/icons/icon-512.png`,
+    `${BASE_PATH}assets/logo.png`,
     'https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap',
     'https://unpkg.com/react@18/umd/react.production.min.js',
     'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
@@ -83,7 +83,7 @@ self.addEventListener('fetch', (event) => {
                     
                     // If both cache and network fail, try to return cached HTML as fallback
                     if (event.request.destination === 'document') {
-                        return caches.match(`${BASE_PATH}schedio_3.html`)
+                        return caches.match(`${BASE_PATH}schedio.html`)
                             .then(cachedResponse => {
                                 if (cachedResponse) {
                                     return cachedResponse;
@@ -194,7 +194,7 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     event.waitUntil(
-        clients.openWindow(`${BASE_PATH}schedio_3.html`)
+        clients.openWindow(`${BASE_PATH}schedio.html`)
     );
 });
 

@@ -37,7 +37,8 @@ Write-Host ""
 Write-Host "Adding files to Git..." -ForegroundColor Yellow
 cd ..
 git add assets/icons/icon-192.png assets/icons/icon-512.png
-git add manifest.json service-worker.js schedio.html schedio_3.html
+git add assets/logo.png
+git add manifest.json service-worker.js schedio.html
 git add docs/*.md
 git add archive/*.html
 git add scripts/*.bat scripts/*.ps1

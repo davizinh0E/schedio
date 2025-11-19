@@ -6,7 +6,7 @@
 # 1. Test it works
 cd scripts
 .\start-server.ps1
-# Visit: http://localhost:8000/schedio_3.html
+# Visit: http://localhost:8000/schedio.html
 # Press Ctrl+C when done
 
 # 2. Commit everything
