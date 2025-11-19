@@ -8,7 +8,7 @@ A beautiful, modern Progressive Web App for managing your tasks and events. Work
 
 ## 🚀 Live Demo
 
-**Try it now**: [https://davizinh0e.github.io/schedio/schedio.html](https://davizinh0e.github.io/schedio/schedio_3.html)
+**Try it now**: [https://davizinh0e.github.io/schedio/schedio.html](https://davizinh0e.github.io/schedio/schedio.html)
 
 ### 📱 Install as App
 
