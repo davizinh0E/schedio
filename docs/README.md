@@ -20,14 +20,21 @@ A beautiful, modern Progressive Web App for managing your tasks and events. Work
 
 - 📆 **Calendar Views** - Month, year, and day views
 - ✅ **Task Management** - Create and organize events
+- 👁️ **Quick Look** - View task details with a single click
+- ✏️ **Full Edit Mode** - Edit all task properties (title, time, category, friends, links)
+- 📋 **Today's Tasks** - See all events for the current day
 - 🎨 **Modern UI** - Beautiful, intuitive interface
 - 🌓 **Dark Mode** - Easy on the eyes
-- 📊 **Statistics** - Track your productivity
+- 📊 **Statistics** - Track your productivity with weekly activity graph
 - 🔔 **Reminders** - Never miss an event
+- 👥 **Friend Integration** - Add friends to events and collaborate
+- 🔗 **Event Links** - Attach URLs to your events
+- 🤖 **AI Scan** - Smart document scanning for quick event creation
 - 📱 **PWA** - Install as a native app
 - 🌐 **Offline Mode** - Works without internet
 - 🚀 **Fast** - Cached for instant loading
 - 🎯 **Categories** - Organize by Health, Studies, Work, Personal
+- 🌍 **Bilingual** - Full support for English and Portuguese
 
 ## 🛠️ Technology Stack
 
@@ -144,16 +151,30 @@ This project is open source and available under the MIT License.
 - GitHub: [@davizinh0e](https://github.com/davizinh0e)
 - Website: [https://davizinh0e.github.io/schedio/](https://davizinh0e.github.io/schedio/)
 
+## ✅ Recent Updates
+
+- ✅ **Quick Look Modal** - Click any task to view all details
+- ✅ **Full Edit Functionality** - Edit all task properties through comprehensive form
+- ✅ **Today View Enhanced** - Events created for today automatically appear in Today Tasks
+- ✅ **Meeting Editor** - Edit mock meetings with full form support
+- ✅ **Time Format Conversion** - Seamless conversion between 12h and 24h formats
+- ✅ **Sign Up & Profile** - Create account and edit user profile
+- ✅ **Friend System** - Add friends by ID with suggestions
+- ✅ **AI Document Scan** - Mock AI scanning feature for quick event creation
+- ✅ **Weekly Activity Graph** - Visual productivity tracking with hover tooltips
+
 ## 🎯 Roadmap
 
 - [ ] Cloud sync
 - [ ] Google Calendar integration
 - [ ] Recurring events
-- [ ] Push notifications
-- [ ] Event sharing
+- [ ] Push notifications (web and mobile)
+- [ ] Real AI document scanning
+- [ ] Event sharing with friends
 - [ ] Multiple calendars
-- [ ] Export/import events
-- [ ] Custom themes
+- [ ] Export/import events (iCal format)
+- [ ] Custom themes and color schemes
+- [ ] Voice commands
 
 ## 🙏 Acknowledgments
 
