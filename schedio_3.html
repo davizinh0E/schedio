@@ -228,10 +228,37 @@
             </Icon>
         );
 
+        const Star = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </Icon>
+        );
+
+        const UserPlus = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <line x1="20" y1="8" x2="20" y2="14"></line>
+                <line x1="23" y1="11" x2="17" y2="11"></line>
+            </Icon>
+        );
+
         const SchedioPrototypes = () => {
-            const [isLoggedIn, setIsLoggedIn] = useState(false);
+            const [isLoggedIn, setIsLoggedIn] = useState(() => {
+                return localStorage.getItem('isLoggedIn') === 'true';
+            });
+            const [showSignUp, setShowSignUp] = useState(false);
+            const [showEditProfile, setShowEditProfile] = useState(false);
+            const [userProfile, setUserProfile] = useState(() => {
+                const saved = localStorage.getItem('userProfile');
+                return saved ? JSON.parse(saved) : { name: '', username: '', email: '', password: '' };
+            });
             const [currentScreen, setCurrentScreen] = useState('home');
             const [viewMode, setViewMode] = useState('today'); // 'today' or 'calendar'
+            const [showScanModal, setShowScanModal] = useState(false);
+            const [showAddFriendModal, setShowAddFriendModal] = useState(false);
+            const [friendId, setFriendId] = useState('');
+            const [friendRequestSent, setFriendRequestSent] = useState(false);
             const [currentMonth, setCurrentMonth] = useState('DEC');
             const [selectedMonth, setSelectedMonth] = useState(null); // null = year view, number = month detail view
             const [selectedDate, setSelectedDate] = useState(null);
@@ -255,6 +282,17 @@
                 ],
                 '2025-12-15': [{ title: 'Web Update', time: '2:00 PM', color: 'bg-gradient-to-br from-teal-200 to-teal-300' }]
             });
+
+            // Weekly Activity Mock Data - Number of completed events/tasks per day
+            const [weeklyActivity] = useState([
+                { day: 'Mon', count: 6, percentage: 60 },
+                { day: 'Tue', count: 8, percentage: 80 },
+                { day: 'Wed', count: 10, percentage: 95 },
+                { day: 'Thu', count: 7, percentage: 70 },
+                { day: 'Fri', count: 9, percentage: 85 },
+                { day: 'Sat', count: 5, percentage: 50 },
+                { day: 'Sun', count: 4, percentage: 40 }
+            ]);
 
             // Save dark mode preference
             React.useEffect(() => {
@@ -418,6 +456,45 @@
                 or: language === 'pt' ? 'OU' : 'OR',
                 dontHaveAccount: language === 'pt' ? 'Não tem uma conta?' : "Don't have an account?",
                 signUp: language === 'pt' ? 'Cadastre-se' : 'Sign up',
+
+                // AI Scan Feature
+                aiScanTitle: language === 'pt' ? 'Digitalizar com IA' : 'AI Scan',
+                aiScanDescription: language === 'pt' 
+                    ? 'Este recurso usa inteligência artificial para escanear documentos em papel e extrair automaticamente informações para criar lembretes e eventos.' 
+                    : 'This feature uses artificial intelligence to scan paper documents and automatically extract information to create reminders and events.',
+                aiScanNote: language === 'pt'
+                    ? 'A câmera analisaria o texto, datas, horários e contexto do documento para preencher automaticamente os campos do evento.'
+                    : 'The camera would analyze the text, dates, times and context of the document to automatically fill in the event fields.',
+                ok: language === 'pt' ? 'OK' : 'OK',
+                
+                // Link Field
+                link: language === 'pt' ? 'Link' : 'Link',
+                linkPlaceholder: language === 'pt' ? 'https://exemplo.com/reuniao' : 'https://example.com/meeting',
+                
+                // Add Friend
+                addFriend: language === 'pt' ? 'Adicionar Amigo' : 'Add Friend',
+                friendId: language === 'pt' ? 'ID do Amigo' : 'Friend ID',
+                friendIdPlaceholder: language === 'pt' ? 'Digite o ID do amigo' : 'Enter friend ID',
+                suggestions: language === 'pt' ? 'Sugestões' : 'Suggestions',
+                add: language === 'pt' ? 'Adicionar' : 'Add',
+                requestSent: language === 'pt' ? 'Solicitação enviada!' : 'Request sent!',
+                close: language === 'pt' ? 'Fechar' : 'Close',
+                
+                // Sign Up
+                createAccount: language === 'pt' ? 'Criar Conta' : 'Create Account',
+                fullName: language === 'pt' ? 'Nome Completo' : 'Full Name',
+                namePlaceholder: language === 'pt' ? 'Digite seu nome completo' : 'Enter your full name',
+                usernamePlaceholder: language === 'pt' ? 'Escolha um nome de usuário' : 'Choose a username',
+                emailPlaceholder: language === 'pt' ? 'Digite seu email' : 'Enter your email',
+                passwordPlaceholder: language === 'pt' ? 'Crie uma senha' : 'Create a password',
+                email: language === 'pt' ? 'Email' : 'Email',
+                save: language === 'pt' ? 'Salvar' : 'Save',
+                edit: language === 'pt' ? 'Editar' : 'Edit',
+                editProfile: language === 'pt' ? 'Editar Perfil' : 'Edit Profile',
+                cancel: language === 'pt' ? 'Cancelar' : 'Cancel',
+                changePassword: language === 'pt' ? 'Alterar Senha' : 'Change Password',
+                currentPassword: language === 'pt' ? 'Senha Atual' : 'Current Password',
+                newPassword: language === 'pt' ? 'Nova Senha' : 'New Password',
             };
 
             const categories = [
@@ -437,6 +514,14 @@
                 { id: 6, name: 'Lucas Rocha', avatar: '👨‍🎓', color: 'bg-indigo-100' },
                 { id: 7, name: 'Beatriz Ferreira', avatar: '👩‍💻', color: 'bg-rose-100' },
                 { id: 8, name: 'Rafael Martins', avatar: '👨‍🔧', color: 'bg-cyan-100' }
+            ];
+
+            // Mock friend suggestions for add friend feature
+            const friendSuggestions = [
+                { id: 'user_2847', name: 'Lucas Ferreira', avatar: '🧑' },
+                { id: 'user_1923', name: 'Beatriz Almeida', avatar: '👩' },
+                { id: 'user_5612', name: 'Rafael Rodrigues', avatar: '👨' },
+                { id: 'user_3489', name: 'Juliana Martins', avatar: '👱‍♀️' }
             ];
 
             const meetings = [
@@ -530,9 +615,20 @@
                                     {t.calendar}
                                 </button>
                             </div>
-                            <button className={`w-10 h-10 rounded-full flex items-center justify-center ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-900'}`}>
-                                <Plus size={20} />
-                            </button>
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={() => setShowScanModal(true)}
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110 ${darkMode ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-gray-200 text-gray-900 hover:bg-gray-300'}`}
+                                >
+                                    <Star size={20} />
+                                </button>
+                                <button 
+                                    onClick={() => setShowAddFriendModal(true)}
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110 ${darkMode ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-gray-200 text-gray-900 hover:bg-gray-300'}`}
+                                >
+                                    <UserPlus size={20} />
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -646,6 +742,158 @@
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* AI Scan Modal */}
+                    {showScanModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                            <div className={`scan-modal relative w-full max-w-md rounded-3xl p-6 shadow-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                                <div className="modal-content text-center">
+                                    <div className={`scan-icon-wrapper w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                                        <Star size={40} className={darkMode ? 'text-white' : 'text-gray-900'} />
+                                    </div>
+                                    <h3 className={`modal-title text-2xl font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                        {t.aiScanTitle}
+                                    </h3>
+                                    <p className={`modal-description text-sm mb-4 leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                                        {t.aiScanDescription}
+                                    </p>
+                                    <p className={`modal-note text-xs mb-6 leading-relaxed italic ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                        {t.aiScanNote}
+                                    </p>
+                                    <button
+                                        onClick={() => setShowScanModal(false)}
+                                        className={`modal-button w-full py-3 rounded-2xl font-bold shadow-lg transition ${darkMode
+                                            ? 'bg-white text-gray-900 hover:bg-gray-100'
+                                            : 'bg-gray-900 text-white hover:bg-gray-800'
+                                            }`}
+                                    >
+                                        {t.ok}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Add Friend Modal */}
+                    {showAddFriendModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                            <div className={`add-friend-modal relative w-full max-w-md rounded-3xl p-6 shadow-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                                <div className="modal-content">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className={`modal-title text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            {t.addFriend}
+                                        </h3>
+                                        <button
+                                            onClick={() => {
+                                                setShowAddFriendModal(false);
+                                                setFriendRequestSent(false);
+                                                setFriendId('');
+                                            }}
+                                            className={`text-2xl ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+
+                                    {friendRequestSent ? (
+                                        <div className="text-center py-8">
+                                            <div className="text-6xl mb-4">✅</div>
+                                            <p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                                {t.requestSent}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="mb-4">
+                                                <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                                    {t.friendId}
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    placeholder={t.friendIdPlaceholder}
+                                                    value={friendId}
+                                                    onChange={(e) => setFriendId(e.target.value)}
+                                                    className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 ${darkMode
+                                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-white focus:ring-gray-600'
+                                                        : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900 focus:ring-gray-200'
+                                                        }`}
+                                                />
+                                            </div>
+
+                                            <h4 className={`text-sm font-semibold mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                {t.suggestions}
+                                            </h4>
+
+                                            <div className="space-y-2 mb-4 max-h-64 overflow-y-auto">
+                                                {friendSuggestions.map((friend) => (
+                                                    <div
+                                                        key={friend.id}
+                                                        className={`flex items-center justify-between p-3 rounded-2xl border transition hover:scale-[1.02] ${darkMode
+                                                            ? 'bg-gray-700 border-gray-600 hover:bg-gray-650'
+                                                            : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                                                            }`}
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="text-2xl">{friend.avatar}</div>
+                                                            <div>
+                                                                <div className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                                                    {friend.name}
+                                                                </div>
+                                                                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                                                    {friend.id}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => {
+                                                                setFriendId(friend.id);
+                                                                setFriendRequestSent(true);
+                                                                setTimeout(() => {
+                                                                    setShowAddFriendModal(false);
+                                                                    setFriendRequestSent(false);
+                                                                    setFriendId('');
+                                                                }, 2000);
+                                                            }}
+                                                            className={`px-4 py-2 rounded-full text-sm font-bold transition ${darkMode
+                                                                ? 'bg-white text-gray-900 hover:bg-gray-100'
+                                                                : 'bg-gray-900 text-white hover:bg-gray-800'
+                                                                }`}
+                                                        >
+                                                            {t.add}
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <button
+                                                onClick={() => {
+                                                    if (friendId) {
+                                                        setFriendRequestSent(true);
+                                                        setTimeout(() => {
+                                                            setShowAddFriendModal(false);
+                                                            setFriendRequestSent(false);
+                                                            setFriendId('');
+                                                        }, 2000);
+                                                    }
+                                                }}
+                                                disabled={!friendId}
+                                                className={`w-full py-3 rounded-2xl font-bold shadow-lg transition ${friendId
+                                                    ? (darkMode
+                                                        ? 'bg-white text-gray-900 hover:bg-gray-100'
+                                                        : 'bg-gray-900 text-white hover:bg-gray-800')
+                                                    : (darkMode
+                                                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed')
+                                                    }`}
+                                            >
+                                                {t.add}
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}
@@ -891,6 +1139,7 @@
                 const [selectedColor, setSelectedColor] = useState(0);
                 const [selectedCategory, setSelectedCategory] = useState(0);
                 const [eventDescription, setEventDescription] = useState('');
+                const [eventLink, setEventLink] = useState('');
                 const [selectedFriends, setSelectedFriends] = useState([]);
                 const [showFriendsModal, setShowFriendsModal] = useState(false);
 
@@ -938,6 +1187,7 @@
                     setEventTitle('');
                     setEventTime('');
                     setEventDescription('');
+                    setEventLink('');
                     setSelectedColor(0);
                     setSelectedCategory(0);
                     setSelectedFriends([]);
@@ -988,7 +1238,7 @@
                                     />
                                 </div>
 
-                                <div className="date-time-fields grid grid-cols-2 gap-3">
+                                <div className="date-time-fields grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div className="form-field-group">
                                         <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.date}</label>
                                         <input
@@ -1056,6 +1306,20 @@
                                             : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900'
                                             }`}
                                     ></textarea>
+                                </div>
+
+                                <div className="form-field-group">
+                                    <label className={`form-label block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.link}</label>
+                                    <input
+                                        type="url"
+                                        placeholder={t.linkPlaceholder}
+                                        value={eventLink}
+                                        onChange={(e) => setEventLink(e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 ${darkMode
+                                            ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-white focus:ring-gray-700'
+                                            : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900 focus:ring-gray-200'
+                                            }`}
+                                    />
                                 </div>
 
                                 {/* Invite People Section */}
@@ -1175,10 +1439,21 @@
 
                         <div className={`weekly-activity-card rounded-3xl p-5 shadow-sm border mb-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
                             <h3 className={`card-title font-bold mb-5 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.weeklyActivity}</h3>
-                            <div className="activity-chart flex items-end justify-between h-40 gap-3">
+                            <div className="activity-chart flex items-end justify-between gap-2" style={{ height: '160px' }}>
                                 {[t.mon, t.tue, t.wed, t.thu, t.fri, t.sat, t.sun].map((day, idx) => (
-                                    <div key={idx} className="chart-bar flex-1 flex flex-col items-center gap-3">
-                                        <div className={`bar-fill w-full rounded-t-2xl ${darkMode ? 'bg-white' : 'bg-gray-900'}`} style={{ height: `${[60, 80, 95, 70, 85, 50, 40][idx]}%` }}></div>
+                                    <div key={idx} className="chart-bar flex-1 flex flex-col items-center justify-end gap-2 group relative" style={{ height: '100%' }}>
+                                        <div className="relative w-full flex flex-col items-center justify-end" style={{ height: '120px' }}>
+                                            <div className={`absolute -top-8 opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-2 py-1 rounded-lg text-xs font-bold whitespace-nowrap z-10 ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-900 text-white'}`}>
+                                                {weeklyActivity[idx].count} {language === 'pt' ? 'tarefas' : 'tasks'}
+                                            </div>
+                                            <div 
+                                                className={`bar-fill w-full rounded-t-2xl transition-all duration-300 group-hover:opacity-80 ${darkMode ? 'bg-white' : 'bg-gray-900'}`} 
+                                                style={{ 
+                                                    height: `${weeklyActivity[idx].percentage}%`,
+                                                    minHeight: '8px'
+                                                }}
+                                            ></div>
+                                        </div>
                                         <span className={`bar-label text-xs font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{day}</span>
                                     </div>
                                 ))}
@@ -1224,14 +1499,24 @@
                             <div className="profile-info p-5">
                                 <div className="flex items-center gap-4">
                                     <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl ${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'}`}>
-                                        U
+                                        {userProfile.name ? userProfile.name.charAt(0).toUpperCase() : 'U'}
                                     </div>
                                     <div className="flex-1">
-                                        <p className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>User Name</p>
-                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>user@email.com</p>
+                                        <p className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            {userProfile.name || 'User Name'}
+                                        </p>
+                                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            @{userProfile.username || 'username'}
+                                        </p>
+                                        <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                            {userProfile.email || 'user@email.com'}
+                                        </p>
                                     </div>
-                                    <button className={darkMode ? 'text-gray-500' : 'text-gray-400'}>
-                                        <ChevronRight size={20} />
+                                    <button 
+                                        onClick={() => setShowEditProfile(true)}
+                                        className={`px-4 py-2 rounded-full text-sm font-semibold transition ${darkMode ? 'bg-white text-gray-900 hover:bg-gray-100' : 'bg-gray-900 text-white hover:bg-gray-800'}`}
+                                    >
+                                        {t.edit}
                                     </button>
                                 </div>
                             </div>
@@ -1378,7 +1663,15 @@
                         </div>
 
                         <button
-                            onClick={() => setIsLoggedIn(false)}
+                            onClick={() => {
+                                // Clear all user data from localStorage
+                                localStorage.removeItem('userProfile');
+                                localStorage.removeItem('isLoggedIn');
+                                // Reset user profile state
+                                setUserProfile({ name: '', username: '', email: '', password: '' });
+                                // Set logged out
+                                setIsLoggedIn(false);
+                            }}
                             className="w-full bg-red-500 text-white py-4 rounded-3xl font-bold shadow-sm hover:bg-red-600 transition"
                         >
                             {t.signOut}
@@ -1539,10 +1832,257 @@
                                 {/* Sign Up Link */}
                                 <p className="signup-prompt text-center text-sm text-gray-600 mt-6">
                                     {t.dontHaveAccount}{' '}
-                                    <button className="signup-link text-purple-600 font-semibold hover:text-purple-700 transition">
+                                    <button 
+                                        onClick={() => setShowSignUp(true)}
+                                        className="signup-link text-purple-600 font-semibold hover:text-purple-700 transition"
+                                    >
                                         {t.signUp}
                                     </button>
                                 </p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const SignUpScreen = () => {
+                const [signUpData, setSignUpData] = useState({ name: '', username: '', email: '', password: '' });
+
+                const handleSignUp = (e) => {
+                    e.preventDefault();
+                    if (signUpData.name && signUpData.username && signUpData.email && signUpData.password) {
+                        if (signUpData.password.length < 6) {
+                            alert(language === 'pt' ? 'A senha deve ter pelo menos 6 caracteres' : 'Password must be at least 6 characters');
+                            return;
+                        }
+                        setUserProfile(signUpData);
+                        localStorage.setItem('userProfile', JSON.stringify(signUpData));
+                        localStorage.setItem('isLoggedIn', 'true');
+                        setIsLoggedIn(true);
+                        setShowSignUp(false);
+                    } else {
+                        alert(language === 'pt' ? 'Por favor, preencha todos os campos' : 'Please fill in all fields');
+                    }
+                };
+
+                return (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-light" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                        <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 animate-fade-in">
+                            <div className="text-center mb-6">
+                                <h2 className="text-3xl font-bold text-gray-900 mb-2">{t.createAccount}</h2>
+                                <p className="text-gray-600 text-sm">{t.signUp}</p>
+                            </div>
+
+                            <form onSubmit={handleSignUp} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t.fullName}</label>
+                                    <input
+                                        type="text"
+                                        placeholder={t.namePlaceholder}
+                                        value={signUpData.name}
+                                        onChange={(e) => setSignUpData({ ...signUpData, name: e.target.value })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-purple-500 transition"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t.username}</label>
+                                    <input
+                                        type="text"
+                                        placeholder={t.usernamePlaceholder}
+                                        value={signUpData.username}
+                                        onChange={(e) => setSignUpData({ ...signUpData, username: e.target.value })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-purple-500 transition"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t.email}</label>
+                                    <input
+                                        type="email"
+                                        placeholder={t.emailPlaceholder}
+                                        value={signUpData.email}
+                                        onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-purple-500 transition"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t.password}</label>
+                                    <input
+                                        type="password"
+                                        placeholder={t.passwordPlaceholder}
+                                        value={signUpData.password}
+                                        onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-purple-500 transition"
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full py-3 bg-purple-600 text-white rounded-2xl font-bold hover:bg-purple-700 transition shadow-lg mt-6"
+                                >
+                                    {t.createAccount}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setShowSignUp(false)}
+                                    className="w-full py-3 bg-gray-100 text-gray-700 rounded-2xl font-semibold hover:bg-gray-200 transition"
+                                >
+                                    {t.cancel}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                );
+            };
+
+            const EditProfileModal = () => {
+                const [editData, setEditData] = useState({ ...userProfile });
+                const [passwordData, setPasswordData] = useState({ current: '', new: '' });
+                const [showPasswordChange, setShowPasswordChange] = useState(false);
+
+                const handleSave = () => {
+                    if (editData.name && editData.username && editData.email) {
+                        if (showPasswordChange) {
+                            if (passwordData.current !== userProfile.password) {
+                                alert(language === 'pt' ? 'Senha atual incorreta' : 'Current password is incorrect');
+                                return;
+                            }
+                            if (passwordData.new.length < 6) {
+                                alert(language === 'pt' ? 'A nova senha deve ter pelo menos 6 caracteres' : 'New password must be at least 6 characters');
+                                return;
+                            }
+                            editData.password = passwordData.new;
+                        }
+                        setUserProfile(editData);
+                        localStorage.setItem('userProfile', JSON.stringify(editData));
+                        setShowEditProfile(false);
+                        setShowPasswordChange(false);
+                        setPasswordData({ current: '', new: '' });
+                    } else {
+                        alert(language === 'pt' ? 'Por favor, preencha todos os campos' : 'Please fill in all fields');
+                    }
+                };
+
+                return (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                        <div className={`w-full max-w-md rounded-3xl shadow-2xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.editProfile}</h3>
+                                <button
+                                    onClick={() => setShowEditProfile(false)}
+                                    className={`text-2xl ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.fullName}</label>
+                                    <input
+                                        type="text"
+                                        placeholder={t.namePlaceholder}
+                                        value={editData.name}
+                                        onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 ${darkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-white focus:ring-gray-600'
+                                            : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900 focus:ring-gray-200'
+                                            }`}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.username}</label>
+                                    <input
+                                        type="text"
+                                        placeholder={t.usernamePlaceholder}
+                                        value={editData.username}
+                                        onChange={(e) => setEditData({ ...editData, username: e.target.value })}
+                                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 ${darkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-white focus:ring-gray-600'
+                                            : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900 focus:ring-gray-200'
+                                            }`}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.email}</label>
+                                    <input
+                                        type="email"
+                                        placeholder={t.emailPlaceholder}
+                                        value={editData.email}
+                                        onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+                                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 ${darkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-white focus:ring-gray-600'
+                                            : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900 focus:ring-gray-200'
+                                            }`}
+                                    />
+                                </div>
+
+                                <div className={`border-t pt-4 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPasswordChange(!showPasswordChange)}
+                                        className={`text-sm font-semibold ${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'}`}
+                                    >
+                                        {showPasswordChange ? (language === 'pt' ? '✕ Cancelar alteração de senha' : '✕ Cancel password change') : t.changePassword}
+                                    </button>
+                                </div>
+
+                                {showPasswordChange && (
+                                    <>
+                                        <div>
+                                            <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.currentPassword}</label>
+                                            <input
+                                                type="password"
+                                                placeholder={language === 'pt' ? 'Digite sua senha atual' : 'Enter your current password'}
+                                                value={passwordData.current}
+                                                onChange={(e) => setPasswordData({ ...passwordData, current: e.target.value })}
+                                                className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 ${darkMode
+                                                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-white focus:ring-gray-600'
+                                                    : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900 focus:ring-gray-200'
+                                                    }`}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.newPassword}</label>
+                                            <input
+                                                type="password"
+                                                placeholder={language === 'pt' ? 'Digite sua nova senha' : 'Enter your new password'}
+                                                value={passwordData.new}
+                                                onChange={(e) => setPasswordData({ ...passwordData, new: e.target.value })}
+                                                className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 ${darkMode
+                                                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-white focus:ring-gray-600'
+                                                    : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900 focus:ring-gray-200'
+                                                    }`}
+                                            />
+                                        </div>
+                                    </>
+                                )}
+
+                                <button
+                                    onClick={handleSave}
+                                    className={`w-full py-3 rounded-2xl font-bold shadow-lg transition ${darkMode
+                                        ? 'bg-white text-gray-900 hover:bg-gray-100'
+                                        : 'bg-gray-900 text-white hover:bg-gray-800'
+                                        }`}
+                                >
+                                    {t.save}
+                                </button>
+
+                                <button
+                                    onClick={() => setShowEditProfile(false)}
+                                    className={`w-full py-3 rounded-2xl font-semibold transition ${darkMode
+                                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-650'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                >
+                                    {t.cancel}
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1605,6 +2145,11 @@
                 </div>
             );
 
+            // Show sign up screen if needed
+            if (showSignUp) {
+                return <SignUpScreen />;
+            }
+
             // Show login screen if not logged in
             if (!isLoggedIn) {
                 return <LoginScreen />;
@@ -1612,18 +2157,21 @@
 
             // Show main app if logged in
             return (
-                <div className="app-wrapper w-full h-screen flex items-center justify-center bg-white">
-                    <div className={`app-container app-main-container w-full mx-auto h-screen flex flex-col ${darkMode ? 'bg-gray-900' : 'bg-light'} rounded-3xl shadow-2xl overflow-hidden`}>
-                        <div className="screens-container flex-1 overflow-hidden">
-                            {currentScreen === 'home' && <HomeScreen />}
-                            {currentScreen === 'calendar' && <CalendarScreen />}
-                            {currentScreen === 'add' && <AddTaskScreen />}
-                            {currentScreen === 'stats' && <StatsScreen />}
-                            {currentScreen === 'config' && <ConfigScreen />}
+                <>
+                    {showEditProfile && <EditProfileModal />}
+                    <div className="app-wrapper w-full h-screen flex items-center justify-center bg-white">
+                        <div className={`app-container app-main-container w-full mx-auto h-screen flex flex-col ${darkMode ? 'bg-gray-900' : 'bg-light'} rounded-3xl shadow-2xl overflow-hidden`}>
+                            <div className="screens-container flex-1 overflow-hidden">
+                                {currentScreen === 'home' && <HomeScreen />}
+                                {currentScreen === 'calendar' && <CalendarScreen />}
+                                {currentScreen === 'add' && <AddTaskScreen />}
+                                {currentScreen === 'stats' && <StatsScreen />}
+                                {currentScreen === 'config' && <ConfigScreen />}
+                            </div>
+                            <BottomNav />
                         </div>
-                        <BottomNav />
                     </div>
-                </div>
+                </>
             );
         };
 

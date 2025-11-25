@@ -168,10 +168,17 @@
             </Icon>
         );
 
+        const Star = ({ size, className }) => (
+            <Icon size={size} className={className}>
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </Icon>
+        );
+
         const SchedioPrototypes = () => {
             const [isLoggedIn, setIsLoggedIn] = useState(false);
             const [currentScreen, setCurrentScreen] = useState('home');
             const [viewMode, setViewMode] = useState('today'); // 'today' or 'calendar'
+            const [showScanModal, setShowScanModal] = useState(false);
             const [currentMonth, setCurrentMonth] = useState('DEC');
             const [selectedMonth, setSelectedMonth] = useState(null); // null = year view, number = month detail view
             const [selectedDate, setSelectedDate] = useState(null);
@@ -195,6 +202,17 @@
                 ],
                 '2025-12-15': [{ title: 'Web Update', time: '2:00 PM', color: 'bg-gradient-to-br from-teal-200 to-teal-300' }]
             });
+
+            // Weekly Activity Mock Data - Number of completed events/tasks per day
+            const [weeklyActivity] = useState([
+                { day: 'Mon', count: 6, percentage: 60 },
+                { day: 'Tue', count: 8, percentage: 80 },
+                { day: 'Wed', count: 10, percentage: 95 },
+                { day: 'Thu', count: 7, percentage: 70 },
+                { day: 'Fri', count: 9, percentage: 85 },
+                { day: 'Sat', count: 5, percentage: 50 },
+                { day: 'Sun', count: 4, percentage: 40 }
+            ]);
 
             // Save dark mode preference
             React.useEffect(() => {
@@ -355,6 +373,20 @@
                 or: language === 'pt' ? 'OU' : 'OR',
                 dontHaveAccount: language === 'pt' ? 'Não tem uma conta?' : "Don't have an account?",
                 signUp: language === 'pt' ? 'Cadastre-se' : 'Sign up',
+
+                // AI Scan Feature
+                aiScanTitle: language === 'pt' ? 'Digitalizar com IA' : 'AI Scan',
+                aiScanDescription: language === 'pt'
+                    ? 'Este recurso usa inteligência artificial para escanear documentos em papel e extrair automaticamente informações para criar lembretes e eventos.'
+                    : 'This feature uses artificial intelligence to scan paper documents and automatically extract information to create reminders and events.',
+                aiScanNote: language === 'pt'
+                    ? 'A câmera analisaria o texto, datas, horários e contexto do documento para preencher automaticamente os campos do evento.'
+                    : 'The camera would analyze the text, dates, times and context of the document to automatically fill in the event fields.',
+                ok: language === 'pt' ? 'OK' : 'OK',
+
+                // Link Field
+                link: language === 'pt' ? 'Link' : 'Link',
+                linkPlaceholder: language === 'pt' ? 'https://exemplo.com/reuniao' : 'https://example.com/meeting',
             };
 
             const categories = [
@@ -455,8 +487,11 @@
                                     {t.calendar}
                                 </button>
                             </div>
-                            <button className={`w-10 h-10 rounded-full flex items-center justify-center ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-900'}`}>
-                                <Plus size={20} />
+                            <button
+                                onClick={() => setShowScanModal(true)}
+                                className={`w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110 ${darkMode ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-gray-200 text-gray-900 hover:bg-gray-300'}`}
+                            >
+                                <Star size={20} />
                             </button>
                         </div>
                     </div>
@@ -571,6 +606,37 @@
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* AI Scan Modal */}
+                    {showScanModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                            <div className={`scan-modal relative w-full max-w-md rounded-3xl p-6 shadow-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                                <div className="modal-content text-center">
+                                    <div className={`scan-icon-wrapper w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                                        <Star size={40} className={darkMode ? 'text-white' : 'text-gray-900'} />
+                                    </div>
+                                    <h3 className={`modal-title text-2xl font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                        {t.aiScanTitle}
+                                    </h3>
+                                    <p className={`modal-description text-sm mb-4 leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                                        {t.aiScanDescription}
+                                    </p>
+                                    <p className={`modal-note text-xs mb-6 leading-relaxed italic ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                        {t.aiScanNote}
+                                    </p>
+                                    <button
+                                        onClick={() => setShowScanModal(false)}
+                                        className={`modal-button w-full py-3 rounded-2xl font-bold shadow-lg transition ${darkMode
+                                            ? 'bg-white text-gray-900 hover:bg-gray-100'
+                                            : 'bg-gray-900 text-white hover:bg-gray-800'
+                                            }`}
+                                    >
+                                        {t.ok}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -807,6 +873,7 @@
                 const [selectedColor, setSelectedColor] = useState(0);
                 const [selectedCategory, setSelectedCategory] = useState(0);
                 const [eventDescription, setEventDescription] = useState('');
+                const [eventLink, setEventLink] = useState('');
 
                 const colorThemes = [
                     'bg-gradient-to-br from-amber-200 to-amber-300',
@@ -839,6 +906,7 @@
                     setEventTitle('');
                     setEventTime('');
                     setEventDescription('');
+                    setEventLink('');
                     setSelectedColor(0);
                     setSelectedCategory(0);
                     setSelectedDate(null);
@@ -888,7 +956,7 @@
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
                                         <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.date}</label>
                                         <input
@@ -958,6 +1026,20 @@
                                     ></textarea>
                                 </div>
 
+                                <div>
+                                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.link}</label>
+                                    <input
+                                        type="url"
+                                        placeholder={t.linkPlaceholder}
+                                        value={eventLink}
+                                        onChange={(e) => setEventLink(e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 ${darkMode
+                                            ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-white focus:ring-gray-700'
+                                            : 'bg-white border-gray-200 text-gray-900 focus:border-gray-900 focus:ring-gray-200'
+                                            }`}
+                                    />
+                                </div>
+
                                 <div className={`flex items-center justify-between rounded-2xl p-4 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
                                     <div className="flex items-center gap-3">
                                         <Bell className={darkMode ? 'text-gray-300' : 'text-gray-700'} size={20} />
@@ -1006,13 +1088,24 @@
                             </div>
                         </div>
 
-                        <div className={`rounded-3xl p-5 shadow-sm border mb-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                            <h3 className={`font-bold mb-5 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.weeklyActivity}</h3>
-                            <div className="flex items-end justify-between h-40 gap-3">
+                        <div className={`weekly-activity-card rounded-3xl p-5 shadow-sm border mb-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                            <h3 className={`card-title font-bold mb-5 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t.weeklyActivity}</h3>
+                            <div className="activity-chart flex items-end justify-between gap-2" style={{ height: '160px' }}>
                                 {[t.mon, t.tue, t.wed, t.thu, t.fri, t.sat, t.sun].map((day, idx) => (
-                                    <div key={idx} className="flex-1 flex flex-col items-center gap-3">
-                                        <div className={`w-full rounded-t-2xl ${darkMode ? 'bg-white' : 'bg-gray-900'}`} style={{ height: `${[60, 80, 95, 70, 85, 50, 40][idx]}%` }}></div>
-                                        <span className={`text-xs font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{day}</span>
+                                    <div key={idx} className="chart-bar flex-1 flex flex-col items-center justify-end gap-2 group relative" style={{ height: '100%' }}>
+                                        <div className="relative w-full flex flex-col items-center justify-end" style={{ height: '120px' }}>
+                                            <div className={`absolute -top-8 opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-2 py-1 rounded-lg text-xs font-bold whitespace-nowrap z-10 ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-900 text-white'}`}>
+                                                {weeklyActivity[idx].count} {language === 'pt' ? 'tarefas' : 'tasks'}
+                                            </div>
+                                            <div
+                                                className={`bar-fill w-full rounded-t-2xl transition-all duration-300 group-hover:opacity-80 ${darkMode ? 'bg-white' : 'bg-gray-900'}`}
+                                                style={{
+                                                    height: `${weeklyActivity[idx].percentage}%`,
+                                                    minHeight: '8px'
+                                                }}
+                                            ></div>
+                                        </div>
+                                        <span className={`bar-label text-xs font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{day}</span>
                                     </div>
                                 ))}
                             </div>
